@@ -40,12 +40,20 @@ if (notifyForm) {
 
     submitBtn.disabled = true; submitBtn.textContent = 'Submitting…';
     try {
+      const body = new URLSearchParams({ name, email });
       const res = await fetch(SUBSCRIBE_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body,
       });
-      if (res.ok) {
+      let ok = res.ok;
+      let txt = '';
+      try { txt = await res.text(); } catch {}
+      try {
+        const data = JSON.parse(txt);
+        if (typeof data.ok !== 'undefined') ok = ok && !!data.ok;
+      } catch {}
+      if (ok) {
         statusEl.textContent = 'Thanks! We will notify you.';
         notifyForm.reset();
       } else {
