@@ -1,0 +1,52 @@
+// Google Apps Script: Web App backend for Jeeno Studios "Get Notified"
+// - Writes Name and Email to spreadsheet ID: 1XKXEUhsF2rGIayQmSzY56j7DP8AMteBQUlazoucRXYw
+// - Handles URL-encoded POST (sendBeacon/form), JSON POST, and GET query fallback
+
+function doPost(e) {
+  e = e || {};
+  const raw = (e.postData && e.postData.contents) ? e.postData.contents : '';
+  let json = {};
+  try { json = JSON.parse(raw); } catch {}
+
+  // Parse urlencoded body if JSON not present
+  const form = raw && (!json.name || !json.email) ? Utilities.parseQueryString(raw) : {};
+  const p = e.parameter || {};
+
+  const name = String(p.name || form.name || json.name || '').trim();
+  const email = String(p.email || form.email || json.email || '').trim();
+
+  if (!name || !email) {
+    return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'Missing name/email' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  const ss = SpreadsheetApp.openById('1XKXEUhsF2rGIayQmSzY56j7DP8AMteBQUlazoucRXYw');
+  const sheet = ss.getSheets()[0]; // single sheet
+  sheet.appendRow([new Date(), name, email]);
+
+  return ContentService.createTextOutput(JSON.stringify({ ok: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  e = e || {};
+  const p = e.parameter || {};
+  const name = String(p.name || '').trim();
+  const email = String(p.email || '').trim();
+
+  if (name && email) {
+    const ss = SpreadsheetApp.openById('1XKXEUhsF2rGIayQmSzY56j7DP8AMteBQUlazoucRXYw');
+    const sheet = ss.getSheets()[0]; // single sheet
+    sheet.appendRow([new Date(), name, email]);
+    return ContentService.createTextOutput(JSON.stringify({ ok: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({ ok: true, ping: 'pong' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Deployment notes:
+// - Deploy → New deployment → Type "Web app"
+// - Execute as: Me; Who has access: Anyone
+// - After changes, create a NEW version and redeploy to update the URL
