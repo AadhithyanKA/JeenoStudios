@@ -21,3 +21,40 @@ const yearEl = document.getElementById('year');
 if (yearEl) {
   yearEl.textContent = new Date().getFullYear();
 }
+
+// --- Notify form submission ---
+const SUBSCRIBE_ENDPOINT = window.SUBSCRIBE_ENDPOINT || 'https://script.google.com/macros/s/AKfycbwh-68P1H8E-MC5NYuPuK0W8kNkH76-tArkRudIWFrfjTqsMeMfUJXJz7uqr8xvNsURrw/exec';
+const notifyForm = document.getElementById('notify-form');
+if (notifyForm) {
+  const submitBtn = document.getElementById('notify-submit');
+  const statusEl = document.getElementById('notify-status');
+  notifyForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusEl.textContent = '';
+    const name = /** @type {HTMLInputElement} */(document.getElementById('name')).value.trim();
+    const email = /** @type {HTMLInputElement} */(document.getElementById('email')).value.trim();
+    const honeypot = /** @type {HTMLInputElement} */(notifyForm.querySelector('.hp')).value.trim();
+    if (honeypot) return; // bot
+    if (!name) { statusEl.textContent = 'Please enter your name.'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { statusEl.textContent = 'Please enter a valid email.'; return; }
+
+    submitBtn.disabled = true; submitBtn.textContent = 'Submitting…';
+    try {
+      const res = await fetch(SUBSCRIBE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email }),
+      });
+      if (res.ok) {
+        statusEl.textContent = 'Thanks! We will notify you.';
+        notifyForm.reset();
+      } else {
+        statusEl.textContent = 'Could not submit right now. Please try again later.';
+      }
+    } catch (err) {
+      statusEl.textContent = 'Network error. Please try again later.';
+    } finally {
+      submitBtn.disabled = false; submitBtn.textContent = 'Notify Me';
+    }
+  });
+}

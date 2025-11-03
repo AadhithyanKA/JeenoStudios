@@ -40,6 +40,27 @@
             </a>
             <a class="btn ghost" href="mailto:aadhithyan.ka@gmail.com">Contact: aadhithyan.ka@gmail.com</a>
           </div>
+
+          <div class="notify">
+            <h2>Get Notified When Released</h2>
+            <form id="notify-form" novalidate>
+              <div class="fields">
+                <label class="field">
+                  <span class="label">Name</span>
+                  <input type="text" name="name" id="name" class="input" placeholder="Your name" required />
+                </label>
+                <label class="field">
+                  <span class="label">Email</span>
+                  <input type="email" name="email" id="email" class="input" placeholder="you@example.com" required />
+                </label>
+                <input type="text" name="company" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn primary" id="notify-submit">Notify Me</button>
+              </div>
+              <p class="form-status" id="notify-status" role="status" aria-live="polite"></p>
+            </form>
+          </div>
         </div>
       </section>
     </main>
