@@ -28,10 +28,16 @@ body {
 .site-header {
   position: sticky;
   top: 0;
-  background: rgba(15,17,23,0.6);
-  backdrop-filter: saturate(160%) blur(8px);
+  background: #0f1117; /* solid dark fallback */
   border-bottom: 1px solid var(--border);
   z-index: 50;
+}
+@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
+  .site-header {
+    background: rgba(15,17,23,0.6);
+    -webkit-backdrop-filter: saturate(160%) blur(8px);
+    backdrop-filter: saturate(160%) blur(8px);
+  }
 }
 .header-inner {
   display: flex;
