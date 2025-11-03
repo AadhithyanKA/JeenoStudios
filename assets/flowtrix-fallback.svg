@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1a1f2f"/>
+      <stop offset="1" stop-color="#0f1117"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#g)"/>
+  <rect x="40" y="40" width="1120" height="320" rx="18" fill="#151823" stroke="#232633"/>
+  <text x="100" y="210" font-size="72" font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif" fill="#e5e7eb" font-weight="700">Flowtrix</text>
+  <text x="100" y="260" font-size="28" font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif" fill="#9ca3af">System and Economy Designer</text>
+  <circle cx="1000" cy="200" r="70" fill="#121316" stroke="#232633"/>
+  <circle cx="1028" cy="178" r="22" fill="#fff"/>
+  <circle cx="1028" cy="178" r="12" fill="#1b2838"/>
+  <path d="M955 227a36 36 0 0 0 60 .6l24-11a46 46 0 0 1-40-33l-19 9a36 36 0 0 0-25 34z" fill="#fff"/>
+</svg>

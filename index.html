@@ -12,96 +12,27 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="site-header">
-      <div class="container header-inner">
-        <a class="brand" href="#home" aria-label="JeenoStudios home">
-          <img src="assets/logo.svg" alt="JeenoStudios logo" class="brand-logo" />
-          <span class="brand-name">JeenoStudios</span>
-        </a>
-        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-        </button>
-        <nav class="site-nav" aria-label="Primary">
-          <a href="#home">Home</a>
-          <a href="#about">About</a>
-          <a href="#services">Services</a>
-          <a href="#contact" class="cta">Contact</a>
-        </nav>
-      </div>
-    </header>
-
     <main>
-      <section id="home" class="hero">
-        <div class="container hero-inner">
-          <h1>Design, Build, and Launch</h1>
-          <p>We craft clean, modern websites and brand experiences for growing companies.</p>
-          <div class="hero-actions">
-            <a href="#services" class="btn primary">Our Services</a>
-            <a href="#contact" class="btn">Get in Touch</a>
-          </div>
-        </div>
-      </section>
-
-      <section id="about" class="section">
-        <div class="container">
-          <h2>About</h2>
-          <p>
-            JeenoStudios is a small, nimble studio focused on simple, effective
-            design and development. We believe in fast iterations, clear
-            communication, and shipping quality work.
-          </p>
-        </div>
-      </section>
-
-      <section id="services" class="section">
-        <div class="container">
-          <h2>Services</h2>
-          <div class="cards">
-            <article class="card">
-              <h3>Branding</h3>
-              <p>Logos, color systems, and visual identity to match your vision.</p>
-            </article>
-            <article class="card">
-              <h3>Web Design</h3>
-              <p>Clean, responsive designs that put your content front and center.</p>
-            </article>
-            <article class="card">
-              <h3>Development</h3>
-              <p>Fast, accessible sites built with modern best practices.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section id="contact" class="section">
-        <div class="container">
-          <h2>Contact</h2>
-          <p>
-            Ready to start? Email us at
-            <a href="mailto:hello@jeenostudios.com">hello@jeenostudios.com</a>
-            or schedule a call.
-          </p>
-          <div class="contact-actions">
-            <a class="btn primary" href="mailto:hello@jeenostudios.com">Email Us</a>
-            <a class="btn" href="#" aria-disabled="true" title="Coming soon">Book a Call</a>
+      <section class="single">
+        <div class="container single-inner">
+          <img
+            class="product-img"
+            src="https://cdn.cloudflare.steamstatic.com/steam/apps/3687390/header.jpg"
+            onerror="this.onerror=null; this.src='assets/flowtrix-fallback.svg'; this.classList.add('fallback');"
+            alt="Flowtrix: System and Economy Designer on Steam"
+            loading="eager"
+          />
+          <h1>Flowtrix: System and Economy Designer</h1>
+          <p class="subtitle">Wishlist on Steam to get updates.</p>
+          <div class="actions">
+            <a class="btn steam" href="https://store.steampowered.com/app/3687390/Flowtrix_System_and_Economy_Designer/" target="_blank" rel="noopener">
+              <img src="assets/steam.svg" alt="" aria-hidden="true" class="icon" />
+              Wishlist on Steam
+            </a>
+            <a class="btn ghost" href="mailto:aadhithyan.ka@gmail.com">Contact: aadhithyan.ka@gmail.com</a>
           </div>
         </div>
       </section>
     </main>
-
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <small>© <span id="year"></span> JeenoStudios. All rights reserved.</small>
-        <div class="social">
-          <a href="#" aria-label="Twitter" title="Coming soon">Twitter</a>
-          <a href="#" aria-label="Instagram" title="Coming soon">Instagram</a>
-          <a href="#" aria-label="LinkedIn" title="Coming soon">LinkedIn</a>
-        </div>
-      </div>
-    </footer>
-
-    <script src="script.js"></script>
   </body>
 </html>
