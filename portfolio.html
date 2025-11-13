@@ -34,56 +34,58 @@
               </defs>
               <text id="titleText" x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" filter="url(#titleSoftGlow)" fill="url(#titleFill)" stroke="url(#titleGlow)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="1" vector-effect="non-scaling-stroke" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" font-size="160" style="paint-order: fill stroke;">AADHITHYAN PORTFOLIO</text>
             </svg>
+            <div class="portfolio-subtitle fadebars" aria-hidden="false">
+              <span class="fadebars__text">AR/VR, Game Designer and Developer</span>
+              <span class="fadebars__bar" style="--i:0" aria-hidden="true"></span>
+              <span class="fadebars__bar" style="--i:1" aria-hidden="true"></span>
+              <span class="fadebars__bar" style="--i:2" aria-hidden="true"></span>
+            </div>
           </h1>
         </div>
       </section>
 
       <section class="projects">
         <div class="container">
-          <div class="projects-header">
-            <h2 class="section-title">Projects</h2>
-            <p class="section-subtitle">Short, sharp descriptions with quick links.</p>
+          
+          <div class="matrix-container">
+            <div class="rain" aria-hidden="true"></div>
+            <div class="matrix-text" data-text="Projects">Projects</div>
           </div>
 
-          <div class="project-grid">
-            <!-- Flowtrix Card -->
+          <div class="project-grid" aria-label="Project list">
             <article class="project-card">
               <div class="project-thumb">
-                <img src="assets/library_header_ENG.png" alt="Flowtrix — System and Economy Designer header" loading="lazy" />
-                <div class="thumb-overlay"></div>
+                <img src="assets/store_capsule_header.png" alt="Flowtrix thumbnail" />
+                <div class="thumb-overlay" aria-hidden="true"></div>
               </div>
               <div class="project-body">
-                <h3 class="project-title">Flowtrix: System and Economy Designer</h3>
-                <div class="project-meta"><span>Sandbox tool</span><span>2024</span></div>
-                <div class="tags">
-                  <span class="tag">Systems</span>
-                  <span class="tag">Economy</span>
-                  <span class="tag">Simulation</span>
-                </div>
-                <p class="project-desc">A sandbox to design and simulate game systems and economies. Visual nodes, live graphs, and balancing workflows for rapid iteration.</p>
+                <h3 class="project-title">Flowtrix : System and Economy Designer</h3>
+                <p class="project-desc">Lightweight node‑based economy designer for games.</p>
                 <div class="project-actions">
-                  <a class="btn primary" href="https://aadhithyan.itch.io/flowtrix-system-and-economy-designer" target="_blank" rel="noopener">View on itch.io</a>
+                  <a class="btn primary" href="https://aadhithyan.itch.io/flowtrix-system-and-economy-designer" target="_blank" rel="noopener noreferrer">View on itch.io</a>
                 </div>
               </div>
             </article>
 
-            <!-- PixelStack3D Card -->
             <article class="project-card">
-              <div class="project-thumb project-thumb--gradient">
-                <img src="assets/logo.svg" alt="PixelStack3D emblem" loading="lazy" />
-                <div class="thumb-overlay"></div>
+              <div class="project-thumb">
+                <svg class="thumb-svg" viewBox="0 0 800 180" preserveAspectRatio="xMidYMid meet" role="img" aria-label="PixelStack3D">
+                  <defs>
+                    <linearGradient id="psGradient2" x1="0" x2="800" y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#ff4fd8" />
+                      <stop offset="50%" stop-color="#7a5cff" />
+                      <stop offset="100%" stop-color="#30d5ff" />
+                    </linearGradient>
+                  </defs>
+                  <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="url(#psGradient2)" font-weight="800" font-size="64" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;">PixelStack3D</text>
+                </svg>
+                <div class="thumb-overlay" aria-hidden="true"></div>
               </div>
               <div class="project-body">
                 <h3 class="project-title">PixelStack3D</h3>
-                <div class="project-meta"><span>Creative tool</span><span>2023</span></div>
-                <div class="tags">
-                  <span class="tag">3D</span>
-                  <span class="tag">Pixels</span>
-                  <span class="tag">Procedural</span>
-                </div>
-                <p class="project-desc">A playful 3D pixel-building tool. Procedural stacking, cozy lighting, and small creative experiments in block-based art.</p>
+                <p class="project-desc">Create 3D models using pixels; stack layers to build depth.</p>
                 <div class="project-actions">
-                  <a class="btn primary" href="https://aadhithyan.itch.io/pixelstack" target="_blank" rel="noopener">View on itch.io</a>
+                  <a class="btn primary" href="https://aadhithyan.itch.io/pixelstack" target="_blank" rel="noopener noreferrer">View on itch.io</a>
                 </div>
               </div>
             </article>
@@ -93,32 +95,23 @@
     </main>
   </body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
+  <!-- Removed VANTA.BIRDS -->
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function(){
       try {
-        VANTA.BIRDS({
-          el: document.querySelector('.portfolio-hero'),
-          mouseControls: true,
-          touchControls: true,
-          gyroControls: false,
-          minHeight: 200.00,
-          minWidth: 200.00,
-          scale: 1.00,
-          scaleMobile: 1.00,
-          backgroundAlpha: 0.0,
-          color1: 0xff4fd8,
-          color2: 0x30d5ff,
-          birdSize: 1.30,
-          wingSpan: 22.00,
-          speedLimit: 4.00,
-          separation: 50.00,
-          alignment: 50.00,
-          cohesion: 20.00,
-        });
+        // Full-page NET background
+        // Create a dedicated backdrop element if not present
+        let siteNet = document.getElementById('site-net-bg');
+        if (!siteNet) {
+          siteNet = document.createElement('div');
+          siteNet.id = 'site-net-bg';
+          siteNet.className = 'site-net-bg';
+          siteNet.setAttribute('aria-hidden', 'true');
+          document.body.insertBefore(siteNet, document.body.firstChild);
+        }
         VANTA.NET({
-          el: document.querySelector('.projects'),
+          el: siteNet,
           mouseControls: true,
           touchControls: true,
           gyroControls: false,
@@ -128,8 +121,8 @@
           scaleMobile: 1.00,
           backgroundAlpha: 0.0,
           color: 0x7a5cff,
-          points: 12.0,
-          maxDistance: 22.0,
+          points: 14.0,
+          maxDistance: 24.0,
           spacing: 18.0,
         });
       } catch (e) { console.error('VANTA init error', e); }

@@ -221,6 +221,9 @@ body {
   position: relative;
   overflow: hidden;
 }
+/* Full-page VANTA.NET backdrop */
+.site-net-bg { position: fixed; inset: 0; z-index: 0; }
+main { position: relative; z-index: 1; }
 .portfolio-title {
   position: relative;
   margin: 0 0 0.5rem 0;
@@ -237,7 +240,7 @@ body {
   transform: translate(-50%, -50%);
   transform-origin: center;
   width: min(1100px, 92vw);
-  height: clamp(120px, 18vw, 200px);
+  height: clamp(180px, 24vw, 260px);
   border-radius: 16px;
   background: rgba(0, 0, 0, 0.18);
   -webkit-backdrop-filter: saturate(140%) blur(10px);
@@ -251,6 +254,20 @@ body {
   margin: 0;
   opacity: 0.8;
 }
+/* Animated subtitle with fade-in bars */
+.portfolio-subtitle { position: relative; z-index: 1; margin-top: 0.35rem; }
+.fadebars { display: inline-block; padding: 0.125rem 0.25rem; overflow: hidden; }
+.fadebars__text { opacity: 0; filter: saturate(120%); animation: fadebars-text-in 900ms ease forwards; animation-delay: 400ms; }
+.fadebars__bar { position: absolute; left: 0; top: calc(var(--i) * (100% / 3)); height: calc(100% / 3 - 2px); width: 100%; border-radius: 6px; background: linear-gradient(135deg, rgba(255,79,216,0.8), rgba(122,92,255,0.8), rgba(48,213,255,0.8)); box-shadow: 0 0 14px rgba(0,0,0,0.35); will-change: transform, opacity; animation: fadebars-sweep 1600ms ease-in-out infinite alternate; animation-delay: calc(var(--i) * 160ms); pointer-events: none; }
+@keyframes fadebars-text-in {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadebars-sweep {
+  0% { transform: translateX(-120%); opacity: 0.85; }
+  50% { transform: translateX(0%); opacity: 0.85; }
+  100% { transform: translateX(120%); opacity: 0.35; }
+}
 
 .portfolio-hero .container { position: relative; z-index: 1; }
 .portfolio-hero canvas { position: absolute !important; inset: 0; z-index: 0; }
@@ -258,7 +275,6 @@ body {
 /* Layer NET behind projects content */
 .projects { position: relative; overflow: hidden; }
 .projects .container { position: relative; z-index: 1; }
-.projects canvas { position: absolute !important; inset: 0; z-index: 0; }
 
 .projects .section-title {
   font-size: clamp(1.5rem, 4vw, 2rem);
@@ -267,6 +283,75 @@ body {
 .projects .section-subtitle {
   margin: 0 0 2rem 0;
   opacity: 0.7;
+}
+
+/* --- Typewriter Demos --- */
+/* --- Matrix Banner (Projects) --- */
+.projects .matrix-container {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  padding: 6px 12px;
+  margin: 0 auto 1rem;
+  background: #000;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.projects .matrix-text {
+  font-size: clamp(20px, 3.8vw, 36px);
+  font-family: monospace;
+  position: relative;
+  z-index: 2;
+  color: transparent;
+  background: linear-gradient(135deg, #ff4fd8, #7a5cff 50%, #30d5ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 0 10px rgba(122,92,255,0.6), 0 0 20px rgba(48,213,255,0.5);
+}
+.projects .matrix-text::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: glitch 2s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  transform: translate(-2px, -2px);
+  color: transparent;
+  background: linear-gradient(135deg, #30d5ff, #7a5cff 50%, #ff4fd8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 0 6px rgba(255,79,216,0.4), 0 0 12px rgba(48,213,255,0.4);
+}
+.projects .rain {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255,79,216,0.22), rgba(122,92,255,0.22) 50%, rgba(48,213,255,0.22)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.12) 2px, transparent 4px);
+  animation: rain 10s linear infinite;
+  z-index: 1;
+}
+@keyframes rain {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+@keyframes glitch {
+  0%, 100% {
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    transform: translate(0);
+  }
+  33% {
+    clip-path: polygon(0 0, 100% 0, 100% 15%, 0 15%);
+    transform: translate(-5px, -5px);
+  }
+  66% {
+    clip-path: polygon(0 85%, 100% 85%, 100% 100%, 0 100%);
+    transform: translate(5px, 5px);
+  }
 }
 
 .project-grid {
@@ -298,8 +383,23 @@ body {
   display: block;
   filter: saturate(1.05);
 }
+.thumb-svg { width: 100%; height: 100%; display: block; }
 .project-thumb--gradient {
   background: linear-gradient(135deg, #ff4fd8 0%, #7a5cff 50%, #30d5ff 100%);
+}
+.thumb-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: clamp(28px, 5vw, 48px);
+  letter-spacing: 0.5px;
+  color: transparent;
+  background: linear-gradient(135deg, #ff4fd8 0%, #7a5cff 50%, #30d5ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.45);
 }
 .thumb-overlay {
   position: absolute;
