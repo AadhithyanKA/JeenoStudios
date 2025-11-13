@@ -255,6 +255,11 @@ body {
 .portfolio-hero .container { position: relative; z-index: 1; }
 .portfolio-hero canvas { position: absolute !important; inset: 0; z-index: 0; }
 
+/* Layer NET behind projects content */
+.projects { position: relative; overflow: hidden; }
+.projects .container { position: relative; z-index: 1; }
+.projects canvas { position: absolute !important; inset: 0; z-index: 0; }
+
 .projects .section-title {
   font-size: clamp(1.5rem, 4vw, 2rem);
   margin: 0 0 0.25rem 0;
