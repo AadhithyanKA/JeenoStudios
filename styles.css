@@ -218,16 +218,24 @@ body {
   padding: 6rem 0 3rem;
   background: radial-gradient(1200px 400px at 20% -20%, rgba(255, 0, 180, 0.12), transparent 60%),
               radial-gradient(800px 300px at 90% 0%, rgba(0, 200, 255, 0.12), transparent 60%);
+  position: relative;
+  overflow: hidden;
 }
 .portfolio-title {
-  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  position: relative;
   margin: 0 0 0.5rem 0;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
+.portfolio-title .title-fill { display: none; }
+.title-outline { display: block; width: 100%; height: clamp(80px, 12vw, 160px); }
 .portfolio-tagline {
   margin: 0;
   opacity: 0.8;
 }
+
+.portfolio-hero .container { position: relative; z-index: 1; }
+.portfolio-hero canvas { position: absolute !important; inset: 0; z-index: 0; }
 
 .projects .section-title {
   font-size: clamp(1.5rem, 4vw, 2rem);

@@ -12,7 +12,21 @@
     <main>
       <section class="portfolio-hero">
         <div class="container">
-          <h1 class="portfolio-title">AADHITHYAN PORTFOLIO</h1>
+          <h1 class="portfolio-title" aria-label="AADHITHYAN PORTFOLIO">
+            <span class="title-fill">AADHITHYAN PORTFOLIO</span>
+            <svg class="title-outline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 160" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <linearGradient id="titleGlow" x1="-20%" x2="20%" y1="0%" y2="0%" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#ff4fd8" />
+                  <stop offset="50%" stop-color="#7a5cff" />
+                  <stop offset="100%" stop-color="#30d5ff" />
+                  <animate attributeName="x1" values="-100%;0%;100%" dur="8s" repeatCount="indefinite" />
+                  <animate attributeName="x2" values="0%;100%;200%" dur="8s" repeatCount="indefinite" />
+                </linearGradient>
+              </defs>
+              <text x="50%" y="50%" dy=".35em" text-anchor="middle" fill="transparent" stroke="url(#titleGlow)" stroke-width="2" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" font-size="120">AADHITHYAN PORTFOLIO</text>
+            </svg>
+          </h1>
           <p class="portfolio-tagline">Projects, tools, and playful experiments — cool, clean, and curious.</p>
         </div>
       </section>
@@ -71,4 +85,31 @@
       </section>
     </main>
   </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      try {
+        VANTA.BIRDS({
+          el: document.querySelector('.portfolio-hero'),
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.00,
+          minWidth: 200.00,
+          scale: 1.00,
+          scaleMobile: 1.00,
+          backgroundAlpha: 0.0,
+          color1: 0xff4fd8,
+          color2: 0x30d5ff,
+          birdSize: 1.30,
+          wingSpan: 22.00,
+          speedLimit: 4.00,
+          separation: 50.00,
+          alignment: 50.00,
+          cohesion: 20.00,
+        });
+      } catch (e) { console.error('VANTA init error', e); }
+    });
+  </script>
   </html>
