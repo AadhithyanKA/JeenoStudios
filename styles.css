@@ -226,9 +226,12 @@ body {
   margin: 0 0 0.5rem 0;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  display: grid;
+  place-items: center;
+  text-align: center;
 }
 .portfolio-title .title-fill { display: none; }
-.title-outline { display: block; width: 100%; height: auto; overflow: visible; }
+.title-outline { display: block; width: min(1100px, 92vw); height: auto; overflow: visible; }
 .portfolio-tagline {
   margin: 0;
   opacity: 0.8;
