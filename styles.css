@@ -227,7 +227,7 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; /* always behind content */
+  z-index: 0; /* behind main content but visible */
   pointer-events: none; /* prevent blocking taps on mobile */
 }
 main { position: relative; z-index: 1; }
@@ -391,6 +391,20 @@ main { position: relative; z-index: 1; }
   filter: saturate(1.05);
 }
 .thumb-svg { width: 100%; height: 100%; display: block; }
+
+/* Flowtrix thumbnail: keep subject centered and avoid tight crop on wide screens */
+.project-thumb--flowtrix img {
+  object-fit: contain;
+  object-position: center;
+  background-color: #0f0f12; /* fill remaining area nicely */
+}
+
+@media (max-width: 640px) {
+  .project-thumb--flowtrix img {
+    object-fit: cover; /* use cover on mobile to fill area */
+    object-position: center top; /* bias to top for banner subject */
+  }
+}
 .project-thumb--gradient {
   background: linear-gradient(135deg, #ff4fd8 0%, #7a5cff 50%, #30d5ff 100%);
 }
