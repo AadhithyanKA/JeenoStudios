@@ -230,8 +230,23 @@ body {
   place-items: center;
   text-align: center;
 }
+.portfolio-title .title-backdrop {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 50%;
+  transform-origin: center;
+  width: min(1100px, 92vw);
+  height: clamp(120px, 18vw, 200px);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: saturate(140%) blur(10px);
+  backdrop-filter: saturate(140%) blur(10px);
+  z-index: 0;
+}
 .portfolio-title .title-fill { display: none; }
-.title-outline { display: block; width: min(1100px, 92vw); height: auto; overflow: visible; }
+.title-outline #titleText { filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+.title-outline { display: block; width: min(1100px, 92vw); height: auto; overflow: visible; text-rendering: geometricPrecision; shape-rendering: geometricPrecision; position: relative; z-index: 1; }
 .portfolio-tagline {
   margin: 0;
   opacity: 0.8;

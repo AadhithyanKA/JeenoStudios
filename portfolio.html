@@ -13,18 +13,26 @@
       <section class="portfolio-hero">
         <div class="container">
           <h1 class="portfolio-title" aria-label="AADHITHYAN PORTFOLIO">
-            <span class="title-fill">AADHITHYAN PORTFOLIO</span>
-            <svg class="title-outline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 300" preserveAspectRatio="xMidYMid meet">
+            <div class="title-backdrop" aria-hidden="true"></div>
+            <svg class="title-outline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 300" preserveAspectRatio="xMidYMid meet" text-rendering="geometricPrecision" shape-rendering="geometricPrecision">
               <defs>
-                <linearGradient id="titleGlow" x1="-20%" x2="20%" y1="0%" y2="0%" gradientUnits="userSpaceOnUse">
+                <linearGradient id="titleGlow" x1="0" x2="2400" y1="0" y2="0" gradientUnits="userSpaceOnUse">
                   <stop offset="0%" stop-color="#ff4fd8" />
                   <stop offset="50%" stop-color="#7a5cff" />
                   <stop offset="100%" stop-color="#30d5ff" />
-                  <animate attributeName="x1" values="-100%;0%;100%" dur="8s" repeatCount="indefinite" />
-                  <animate attributeName="x2" values="0%;100%;200%" dur="8s" repeatCount="indefinite" />
+                  <animateTransform attributeName="gradientTransform" type="translate" values="-2400 0; 2400 0; -2400 0" dur="10s" repeatCount="indefinite" />
                 </linearGradient>
+                <linearGradient id="titleFill" x1="0" x2="2400" y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#ff4fd8" />
+                  <stop offset="50%" stop-color="#7a5cff" />
+                  <stop offset="100%" stop-color="#30d5ff" />
+                  <animateTransform attributeName="gradientTransform" type="translate" values="-2400 0; 2400 0; -2400 0" dur="10s" repeatCount="indefinite" />
+                </linearGradient>
+                <filter id="titleSoftGlow" x="-150" y="-150" width="2700" height="550" filterUnits="userSpaceOnUse">
+                  <feDropShadow dx="0" dy="0" stdDeviation="7" flood-color="#000000" flood-opacity="0.8" />
+                </filter>
               </defs>
-              <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" fill="transparent" stroke="url(#titleGlow)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" font-size="160">AADHITHYAN PORTFOLIO</text>
+              <text id="titleText" x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" filter="url(#titleSoftGlow)" fill="url(#titleFill)" stroke="url(#titleGlow)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="1" vector-effect="non-scaling-stroke" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" font-size="160" style="paint-order: fill stroke;">AADHITHYAN PORTFOLIO</text>
             </svg>
           </h1>
           <p class="portfolio-tagline">Projects, tools, and playful experiments — cool, clean, and curious.</p>
