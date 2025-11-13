@@ -222,7 +222,14 @@ body {
   overflow: hidden;
 }
 /* Full-page VANTA.NET backdrop */
-.site-net-bg { position: fixed; inset: 0; z-index: 0; }
+.site-net-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* always behind content */
+  pointer-events: none; /* prevent blocking taps on mobile */
+}
 main { position: relative; z-index: 1; }
 .portfolio-title {
   position: relative;
@@ -424,4 +431,13 @@ main { position: relative; z-index: 1; }
 
 @media (hover: hover) {
   .project-card:hover .project-thumb img { transform: scale(1.02); transition: transform 200ms ease; }
+}
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+  .title-outline { width: min(900px, 94vw); }
+  .portfolio-subtitle { font-size: 0.95rem; }
+  .projects .matrix-text { font-size: clamp(18px, 5.5vw, 28px); }
+  .project-grid { grid-template-columns: 1fr; }
+  .project-thumb { height: 150px; }
 }
