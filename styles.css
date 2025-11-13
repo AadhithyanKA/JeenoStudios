@@ -228,7 +228,7 @@ body {
   text-transform: uppercase;
 }
 .portfolio-title .title-fill { display: none; }
-.title-outline { display: block; width: 100%; height: clamp(80px, 12vw, 160px); }
+.title-outline { display: block; width: 100%; height: auto; overflow: visible; }
 .portfolio-tagline {
   margin: 0;
   opacity: 0.8;
