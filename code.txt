@@ -1,10 +1,38 @@
 // Google Apps Script: Web App backend for Jeeno Studios "Get Notified"
 // - Writes Name and Email to spreadsheet ID: 1XKXEUhsF2rGIayQmSzY56j7DP8AMteBQUlazoucRXYw
 // - Handles URL-encoded POST (sendBeacon/form), JSON POST, and GET query fallback
+// - Adds logging and a verify endpoint to confirm last written row
+
+function getSheet_() {
+  const id = '1XKXEUhsF2rGIayQmSzY56j7DP8AMteBQUlazoucRXYw';
+  try {
+    const ss = SpreadsheetApp.openById(id);
+    const sheet = ss.getSheets()[0];
+    return sheet;
+  } catch (err) {
+    Logger.log('openById failed: ' + err);
+    throw err;
+  }
+}
+
+function append_(name, email) {
+  Logger.log('append_: name=%s, email=%s', name, email);
+  const sheet = getSheet_();
+  sheet.appendRow([new Date(), name, email]);
+}
+
+function lastRow_() {
+  const sheet = getSheet_();
+  const row = sheet.getLastRow();
+  if (row < 1) return null;
+  const values = sheet.getRange(row, 1, 1, 3).getValues()[0];
+  return { row, timestamp: values[0], name: values[1], email: values[2] };
+}
 
 function doPost(e) {
   e = e || {};
   const raw = (e.postData && e.postData.contents) ? e.postData.contents : '';
+  Logger.log('doPost raw length=%s', raw ? raw.length : 0);
   let json = {};
   try { json = JSON.parse(raw); } catch {}
 
@@ -14,35 +42,61 @@ function doPost(e) {
 
   const name = String(p.name || form.name || json.name || '').trim();
   const email = String(p.email || form.email || json.email || '').trim();
+  Logger.log('doPost parsed name=%s, email=%s', name, email);
 
   if (!name || !email) {
-    return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'Missing name/email' }))
+    return ContentService.createTextOutput(JSON.stringify({ ok: false, reason: 'missing_fields' }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  const ss = SpreadsheetApp.openById('1XKXEUhsF2rGIayQmSzY56j7DP8AMteBQUlazoucRXYw');
-  const sheet = ss.getSheets()[0]; // single sheet
-  sheet.appendRow([new Date(), name, email]);
-
-  return ContentService.createTextOutput(JSON.stringify({ ok: true }))
-    .setMimeType(ContentService.MimeType.JSON);
+  try {
+    append_(name, email);
+    return ContentService.createTextOutput(JSON.stringify({ ok: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    Logger.log('doPost append_ error: ' + err);
+    return ContentService.createTextOutput(JSON.stringify({ ok: false, error: String(err) }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 function doGet(e) {
   e = e || {};
   const p = e.parameter || {};
-  const name = String(p.name || '').trim();
-  const email = String(p.email || '').trim();
-
-  if (name && email) {
-    const ss = SpreadsheetApp.openById('1XKXEUhsF2rGIayQmSzY56j7DP8AMteBQUlazoucRXYw');
-    const sheet = ss.getSheets()[0]; // single sheet
-    sheet.appendRow([new Date(), name, email]);
-    return ContentService.createTextOutput(JSON.stringify({ ok: true }))
+  if ('ping' in p) {
+    return ContentService.createTextOutput(JSON.stringify({ ok: true, ping: 'pong' }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  return ContentService.createTextOutput(JSON.stringify({ ok: true, ping: 'pong' }))
+  if ('verify' in p) {
+    try {
+      const last = lastRow_();
+      return ContentService.createTextOutput(JSON.stringify({ ok: true, lastRow: last }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      Logger.log('verify error: ' + err);
+      return ContentService.createTextOutput(JSON.stringify({ ok: false, error: String(err) }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  const name = String(p.name || '').trim();
+  const email = String(p.email || '').trim();
+  Logger.log('doGet name=%s, email=%s', name, email);
+
+  if (name && email) {
+    try {
+      append_(name, email);
+      return ContentService.createTextOutput(JSON.stringify({ ok: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      Logger.log('doGet append_ error: ' + err);
+      return ContentService.createTextOutput(JSON.stringify({ ok: false, error: String(err) }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({ ok: false, reason: 'missing_fields' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -50,3 +104,4 @@ function doGet(e) {
 // - Deploy → New deployment → Type "Web app"
 // - Execute as: Me; Who has access: Anyone
 // - After changes, create a NEW version and redeploy to update the URL
+// Tip: Use "Executions" to view logs; you should see name/email values and errors if any
