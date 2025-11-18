@@ -725,3 +725,91 @@ main { position: relative; z-index: 1; }
     padding: 0.4rem 0.6rem;
   }
 }
+/* Responsive video embed for Showreel */
+.video-embed {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+.video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Showreel integration: center and fit within project card styles */
+.projects.showreel .project-grid {
+  place-items: center;
+  grid-template-columns: 1fr; /* single centered card */
+}
+.projects.showreel .project-card {
+  width: min(900px, 92vw);
+  margin: 0 auto;
+  aspect-ratio: 16 / 9; /* ensure entire card keeps 16:9 */
+}
+.projects.showreel .project-thumb {
+  height: 100%; /* fill the card's 16:9 height */
+  background: transparent;
+}
+.projects.showreel .project-body { display: none; }
+
+/* Make the embed fill the card instead of using padding-bottom */
+.projects.showreel .video-embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 0; /* override 16:9 padding trick */
+  border-radius: 16px; /* match card radius */
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+.projects.showreel .video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Unmute overlay styled to match site aesthetics */
+.projects.showreel .video-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0.2));
+  z-index: 2;
+}
+.projects.showreel .video-unmute {
+  pointer-events: auto;
+  border: none;
+}
+
+/* Shortfilm embed overlay in animations section */
+.animations .shortfilm-embed .video-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0.2));
+  z-index: 2;
+}
+.animations .shortfilm-embed .video-unmute { pointer-events: auto; border: none; }
+.animations .shortfilm-embed .project-thumb { height: auto; background: transparent; }
+.animations .shortfilm-grid {
+  place-items: center;
+  grid-template-columns: 1fr; /* single centered card */
+}
+.animations .shortfilm-grid .project-card {
+  width: min(900px, 92vw);
+  margin: 0 auto;
+}
+.animations .shortfilm-embed .project-body {
+  padding: 0.85rem 1rem 0.35rem;
+  text-align: center;
+}
