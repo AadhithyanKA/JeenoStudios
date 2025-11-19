@@ -725,7 +725,7 @@
         dialog.focus();
         // Update avatar quote when modal opens
         if (bubble) {
-          const rawQuote = jeenoCard.dataset.quote || 'Jeeno was my first game.\\ndeveloped for android.\\nWhich was a commercial sucess with 10,000 downloads';
+const rawQuote = jeenoCard.dataset.quote || 'Jeeno was my first game.\\ndeveloped for android.\\nWhich was a commercial success with 10,000 downloads';
           const text = rawQuote.replace(/\\n/g, '\n').trim();
           const parts = text.split('\n').map(s => s.trim()).filter(Boolean);
           const firstMsg = [parts[0], parts[1]].filter(Boolean).join('\n');
@@ -920,6 +920,8 @@
       startAutoplay();
       buildDots();
       updateDots();
+      // Center first slide on load (especially for mobile)
+      setTimeout(() => scrollToIndex(0), 0);
     });
   </script>
   <script src="https://www.youtube.com/iframe_api"></script>

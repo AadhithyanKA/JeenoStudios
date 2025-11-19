@@ -625,6 +625,13 @@ main > section {
   }
 }
 
+/* Ensure mobile cards are horizontally centered when snapped */
+@media (max-width: 640px) {
+  .slider-track > .project-card {
+    margin-inline: auto;
+  }
+}
+
 .slider {
   padding: 0 0.75rem; /* space at edges to glimpse next */
 }
@@ -736,6 +743,18 @@ main > section {
 
 @media (max-width: 640px) {
   .slider-edge { width: 28%; }
+}
+
+/* Mobile centering of game cards */
+@media (max-width: 640px) {
+  .slider {
+    min-height: 70vh;
+    display: grid;
+    place-items: center;
+  }
+  .slider-track {
+    align-items: center;
+  }
 }
 
 @media (max-width: 640px) {
