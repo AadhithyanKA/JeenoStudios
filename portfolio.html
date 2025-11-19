@@ -41,6 +41,9 @@
               <span class="fadebars__bar" style="--i:2" aria-hidden="true"></span>
             </div>
           </h1>
+          <div class="section-index" aria-label="Section navigation">
+            <!-- Buttons populated dynamically -->
+          </div>
         </div>
       </section>
 
@@ -416,7 +419,12 @@
             </article>
           </div>
 
-          <!-- Shortfilm Works subsection using same styling -->
+        </div>
+      </section>
+
+      <!-- Shortfilm Works: separate top-level section -->
+      <section class="animations shortfilms">
+        <div class="container">
           <div class="matrix-container">
             <div class="rain" aria-hidden="true"></div>
             <div class="matrix-text" data-text="Shortfilm Works">Shortfilm Works</div>
@@ -514,13 +522,22 @@
                 <a class="btn" href="https://www.youtube.com/watch?v=bjxHs0vb-1c" target="_blank" rel="noopener noreferrer">Open on YouTube</a>
               </div>
             </article>
-
-
           </div>
         </div>
       </section>
     </main>
   </body>
+  <!-- Avatar guide overlay -->
+  <div class="avatar-guide" aria-live="polite">
+    <img class="avatar-img" src="assets/Aadhithyan.gif" alt="Guide avatar" />
+    <div class="speech-bubble">Welcome! Use the menu or buttons to explore.</div>
+  </div>
+  <div class="section-nav-bar" role="navigation" aria-label="Section controls">
+    <button class="btn primary section-prev-btn" type="button" aria-label="Previous section">◀ Previous</button>
+    <button class="btn primary section-home-btn" type="button" aria-label="Go to Home">Home</button>
+    <button class="btn primary section-next-btn" type="button" aria-label="Next section">Next ▶</button>
+  </div>
+  <footer class="site-footer" aria-label="Site footer">&copy; Aadhithyan 2025</footer>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <!-- Removed VANTA.BIRDS -->
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
@@ -786,6 +803,11 @@
         ev.preventDefault();
         enableSound();
       });
+      // Make entire overlay clickable as well
+      overlay && overlay.addEventListener('click', function(ev){
+        ev.preventDefault();
+        enableSound();
+      });
       // Also attempt on first user interaction anywhere
       ['pointerdown','keydown'].forEach(evt => {
         window.addEventListener(evt, function handler(){
@@ -852,6 +874,276 @@
         if (typeof prevReady === 'function') { try { prevReady(); } catch(e) {} }
         initShortfilmPlayers();
       };
+    });
+  </script>
+  <script>
+    // Section-by-section navigation: Right Arrow/'D' and Left Arrow/'A', with Next/Previous/Home buttons
+    document.addEventListener('DOMContentLoaded', function(){
+      const sections = Array.from(document.querySelectorAll('main > section'));
+      const nextBtn = document.querySelector('.section-next-btn');
+      const prevBtn = document.querySelector('.section-prev-btn');
+      const homeBtn = document.querySelector('.section-home-btn');
+      const navBar = document.querySelector('.section-nav-bar');
+      const indexContainer = document.querySelector('.section-index');
+      const avatar = document.querySelector('.avatar-guide');
+      const bubble = avatar ? avatar.querySelector('.speech-bubble') : null;
+      const footer = document.querySelector('.site-footer');
+      const AVATAR_LEAD_MS = 220; // avatar starts moving slightly before page transition
+      function setAvatarOffset(direction){
+        if (!avatar) return;
+        const dist = '110vw';
+        const value = direction === 'forward' ? dist : direction === 'back' ? `calc(-1 * ${dist})` : '0vw';
+        avatar.style.setProperty('--avatar-offset', value);
+      }
+
+      function travelAvatar(direction){
+        if (!avatar) return;
+        // Hide bubble during travel
+        if (bubble) bubble.classList.remove('bubble-show');
+        setAvatarOffset(direction);
+      }
+
+      function arriveAvatar(direction){
+        if (!avatar) return;
+        // Teleport to the opposite side without animating, then slide to center
+        const dist = '110vw';
+        const opposite = direction === 'forward' ? `calc(-1 * ${dist})` : dist;
+        avatar.classList.add('avatar-no-transition');
+        avatar.style.setProperty('--avatar-offset', opposite);
+        // Force reflow to apply the no-transition state
+        void avatar.offsetWidth;
+        avatar.classList.remove('avatar-no-transition');
+        // Slide to computed resting offset (away from Home button)
+        avatar.style.setProperty('--avatar-offset', 'var(--avatar-rest-offset)');
+      }
+
+      function positionAvatarAboveFooter(){
+        if (!avatar || !footer) return;
+        const footerRect = footer.getBoundingClientRect();
+        // Place avatar halfway above the footer bar
+        const ratio = 0.5; // half of footer height
+        const gapAbove = 6; // small breathing space
+        const bottomOffsetPx = Math.max(6, (footerRect.height * ratio) + gapAbove);
+        avatar.style.setProperty('--avatar-bottom', `${bottomOffsetPx}px`);
+      }
+
+      function computeAvatarRestOffset(){
+        if (!avatar || !navBar) return;
+        const rect = navBar.getBoundingClientRect();
+        const centerX = window.innerWidth / 2;
+        const leftSpace = rect.left;
+        const rightSpace = window.innerWidth - rect.right;
+        const safeMargin = 16; // keep some space from buttons
+        // Choose side with more space
+        let targetX;
+        const avatarApproxWidth = Math.min(Math.max(window.innerWidth * 0.12, 96), 140);
+        if (rightSpace >= leftSpace) {
+          targetX = Math.min(window.innerWidth - safeMargin - avatarApproxWidth / 2, rect.right + safeMargin + avatarApproxWidth / 2);
+        } else {
+          targetX = Math.max(safeMargin + avatarApproxWidth / 2, rect.left - safeMargin - avatarApproxWidth / 2);
+        }
+        const offsetPx = Math.round(targetX - centerX);
+        avatar.style.setProperty('--avatar-rest-offset', `${offsetPx}px`);
+      }
+      if (!sections.length || !nextBtn) return;
+
+      let current = 0;
+      // Prepare animation base classes
+      sections.forEach(sec => sec.classList.add('section-animated'));
+      let isAnimating = false;
+      function setActive(index, instant){
+        const next = Math.max(0, Math.min(index, sections.length - 1));
+        if (instant) {
+          current = next;
+          sections.forEach((sec, i) => {
+            const active = i === current;
+            sec.classList.toggle('section-hidden', !active);
+            sec.setAttribute('aria-hidden', (!active).toString());
+          });
+          updateNavButtons();
+          window.scrollTo({ top: 0, behavior: 'instant' });
+          return;
+        }
+        if (isAnimating || next === current) return;
+
+        const direction = next > current ? 'forward' : 'back';
+        const fromSec = sections[current];
+        const toSec = sections[next];
+        isAnimating = true;
+
+        toSec.classList.remove('section-hidden');
+        toSec.setAttribute('aria-hidden', 'false');
+        toSec.classList.add(direction === 'forward' ? 'section-enter-forward' : 'section-enter-back');
+
+        fromSec.classList.add(direction === 'forward' ? 'section-exit-forward' : 'section-exit-back');
+
+        // Animate avatar movement; speak after arrival
+        let targetLabel = (function(sec, i){
+            if (sec.classList.contains('portfolio-hero')) return 'Home';
+            const mt = sec.querySelector('.matrix-text');
+            if (mt && (mt.getAttribute('data-text') || mt.textContent)) {
+              return mt.getAttribute('data-text') || mt.textContent.trim();
+            }
+            const title = sec.querySelector('.portfolio-title');
+            if (title && title.textContent) return title.textContent.trim();
+            return `Section ${i + 1}`;
+          })(toSec, next);
+        travelAvatar(direction);
+
+        // Start avatar travel first, then trigger section transition
+        setTimeout(() => {
+          // Force reflow
+          void toSec.offsetWidth; void fromSec.offsetWidth;
+          toSec.classList.add('section-enter-active');
+          fromSec.classList.add('section-exit-active');
+        }, AVATAR_LEAD_MS);
+
+        let doneCount = 0;
+        function cleanup(){
+          doneCount++;
+          if (doneCount < 2) return;
+          fromSec.classList.remove('section-exit-forward','section-exit-back','section-exit-active');
+          fromSec.classList.add('section-hidden');
+          fromSec.setAttribute('aria-hidden', 'true');
+          toSec.classList.remove('section-enter-forward','section-enter-back','section-enter-active');
+          current = next;
+          updateNavButtons();
+          window.scrollTo({ top: 0, behavior: 'instant' });
+          isAnimating = false;
+          // Avatar arrives onto the new page and speaks
+          arriveAvatar(direction);
+          if (avatar && bubble) {
+            bubble.textContent = (targetLabel.toLowerCase() === 'home')
+              ? 'Welcome! Use the menu or buttons to explore.'
+              : `This is my ${targetLabel}.`;
+            bubble.classList.add('bubble-show');
+            clearTimeout(window.__bubbleTimer);
+            window.__bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-show'), 4200);
+          }
+        }
+        const onFromEnd = (e) => { if (e.target !== fromSec) return; fromSec.removeEventListener('transitionend', onFromEnd); cleanup(); };
+        const onToEnd = (e) => { if (e.target !== toSec) return; toSec.removeEventListener('transitionend', onToEnd); cleanup(); };
+        fromSec.addEventListener('transitionend', onFromEnd);
+        toSec.addEventListener('transitionend', onToEnd);
+        // Fallback timeout slightly longer than CSS duration, plus lead
+        setTimeout(() => {
+          if (isAnimating) {
+            fromSec.removeEventListener('transitionend', onFromEnd);
+            toSec.removeEventListener('transitionend', onToEnd);
+            cleanup(); cleanup();
+          }
+        }, 700 + AVATAR_LEAD_MS);
+      }
+
+      function updateNavButtons(){
+        if (current >= sections.length - 1) { nextBtn.style.display = 'none'; } else { nextBtn.style.display = ''; }
+        if (prevBtn) { if (current <= 0) { prevBtn.style.display = 'none'; } else { prevBtn.style.display = ''; } }
+      }
+
+      function nextSection(){ setActive(current + 1, false); }
+      function prevSection(){ setActive(current - 1, false); }
+
+      // Initialize: show only the first section
+      setActive(0, true);
+      computeAvatarRestOffset();
+      avatar && avatar.style.setProperty('--avatar-offset', 'var(--avatar-rest-offset)');
+      // Anchor avatar just above footer on load
+      positionAvatarAboveFooter();
+      // Initial avatar dialogue
+      (function(){
+        if (!avatar || !bubble) return;
+        bubble.textContent = 'Welcome! Use the menu or buttons to explore.';
+        bubble.classList.add('bubble-show');
+        clearTimeout(window.__bubbleTimer);
+        window.__bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-show'), 4200);
+      })();
+
+      // Auto-fade nav after inactivity; restore on interaction
+      let navFadeTimer = null;
+      function resetNavFade(){
+        if (!navBar) return;
+        navBar.classList.remove('nav-faded');
+        if (navFadeTimer) clearTimeout(navFadeTimer);
+        navFadeTimer = setTimeout(() => {
+          navBar.classList.add('nav-faded');
+        }, 5000);
+      }
+      resetNavFade();
+
+      // Populate first-page section menu
+      function deriveLabel(sec, i){
+        if (sec.classList.contains('portfolio-hero')) return 'Home';
+        const mt = sec.querySelector('.matrix-text');
+        if (mt && (mt.getAttribute('data-text') || mt.textContent)) {
+          return mt.getAttribute('data-text') || mt.textContent.trim();
+        }
+        const title = sec.querySelector('.portfolio-title');
+        if (title && title.textContent) return title.textContent.trim();
+        return `Section ${i + 1}`;
+      }
+
+      if (indexContainer) {
+        indexContainer.innerHTML = '';
+        sections.forEach((sec, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'btn';
+          btn.type = 'button';
+          btn.textContent = deriveLabel(sec, i);
+          btn.addEventListener('click', function(){
+            const direction = i > current ? 'forward' : 'back';
+            setActive(i, true);
+            // After direct jump, keep avatar at resting offset away from nav
+            avatar && avatar.style.setProperty('--avatar-offset', 'var(--avatar-rest-offset)');
+            if (bubble) {
+              const label = deriveLabel(sections[i], i);
+              bubble.textContent = (label.toLowerCase() === 'home')
+                ? 'Welcome! Use the menu or buttons to explore.'
+                : `This is my ${label}.`;
+              bubble.classList.add('bubble-show');
+              clearTimeout(window.__bubbleTimer);
+              window.__bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-show'), 4200);
+            }
+          });
+          indexContainer.appendChild(btn);
+        });
+      }
+
+      // Button navigation
+      nextBtn.addEventListener('click', function(e){ e.preventDefault(); nextSection(); });
+      if (prevBtn) { prevBtn.addEventListener('click', function(e){ e.preventDefault(); prevSection(); }); }
+      if (homeBtn) { homeBtn.addEventListener('click', function(e){ e.preventDefault(); setActive(0, false); }); }
+      // Interaction restores nav visibility
+      [nextBtn, prevBtn, homeBtn].forEach(el => { if (el) el.addEventListener('click', resetNavFade); });
+
+      // Keyboard navigation (Right Arrow/'D' for next; Left Arrow/'A' for previous)
+      window.addEventListener('keydown', function(e){
+        const key = (e.key || '').toLowerCase();
+        if (e.code === 'ArrowRight' || key === 'arrowright' || e.code === 'KeyD' || key === 'd') {
+          e.preventDefault();
+          nextSection();
+          resetNavFade();
+        }
+        if (e.code === 'ArrowLeft' || key === 'arrowleft' || e.code === 'KeyA' || key === 'a') {
+          e.preventDefault();
+          prevSection();
+          resetNavFade();
+        }
+        if (e.code === 'Home' || key === 'home') {
+          e.preventDefault();
+          setActive(0, false);
+          resetNavFade();
+        }
+      });
+      // Pointer movement/touch also restores nav visibility
+      window.addEventListener('mousemove', resetNavFade, { passive: true });
+      window.addEventListener('touchstart', resetNavFade, { passive: true });
+      // Keep avatar aligned with footer on viewport changes
+      window.addEventListener('resize', function(){
+        positionAvatarAboveFooter();
+        computeAvatarRestOffset();
+        avatar && avatar.style.setProperty('--avatar-offset', 'var(--avatar-rest-offset)');
+      }, { passive: true });
+      window.addEventListener('orientationchange', positionAvatarAboveFooter);
     });
   </script>
   </html>
