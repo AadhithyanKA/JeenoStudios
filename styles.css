@@ -236,9 +236,20 @@ body {
   z-index: 0; /* behind main content but visible */
   pointer-events: none; /* prevent blocking taps on mobile */
 }
-main { position: relative; z-index: 1; overflow-x: hidden; display: grid; }
+main {
+  position: relative;
+  z-index: 1;
+  overflow-x: hidden;
+  display: grid;
+  /* ensure in-page scroll lands above fixed nav/footer */
+  scroll-padding-bottom: calc(var(--safe-bottom, 5.5rem) + env(safe-area-inset-bottom));
+}
 /* Overlay sections in the same grid cell so transitions don't push layout */
-main > section { grid-area: 1 / 1; }
+main > section {
+  grid-area: 1 / 1;
+  /* keep last content visible above nav/footer */
+  padding-bottom: calc(var(--safe-bottom, 5.5rem) + env(safe-area-inset-bottom));
+}
 .portfolio-title {
   position: relative;
   margin: 0 0 0.5rem 0;
@@ -862,7 +873,7 @@ main > section { grid-area: 1 / 1; }
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 2.5rem; /* leave room for footer below */
+  bottom: calc(env(safe-area-inset-bottom) + 2.5rem); /* leave room for footer below */
   z-index: 1000;
   display: flex;
   gap: 0.75rem;
@@ -994,6 +1005,7 @@ main > section { grid-area: 1 / 1; }
   --bubble-shift: 0px; /* JS sets this to keep bubble inside viewport */
   max-width: min(90vw, 520px);
   box-sizing: border-box;
+  position: relative; /* keep tail aligned to bubble */
   padding: 10px 14px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.14);
@@ -1028,6 +1040,9 @@ main > section { grid-area: 1 / 1; }
 @media (max-width: 600px) {
   .speech-bubble {
     max-width: calc(100vw - 24px); /* leave 12px margin on both sides */
+    max-height: calc(60vh); /* cap bubble height to stay within screen */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     font-size: 0.95rem;
   }
 }

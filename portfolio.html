@@ -917,6 +917,15 @@
       const bubble = avatar ? avatar.querySelector('.speech-bubble') : null;
       const footer = document.querySelector('.site-footer');
       const AVATAR_LEAD_MS = 220; // avatar starts moving slightly before page transition
+
+      // Compute bottom safe padding so last content isn't hidden by fixed nav/footer
+      function updateSafeBottomPadding(){
+        const navH = navBar ? navBar.offsetHeight : 0;
+        const footH = footer ? footer.offsetHeight : 0;
+        const extra = 12; // breathing space
+        const safe = Math.ceil(navH + footH + extra);
+        document.documentElement.style.setProperty('--safe-bottom', `${safe}px`);
+      }
       function setAvatarOffset(direction){
         if (!avatar) return;
         const dist = '110vw';
@@ -1095,6 +1104,8 @@
       avatar && avatar.style.setProperty('--avatar-offset', 'var(--avatar-rest-offset)');
       // Anchor avatar just above footer on load
       positionAvatarAboveFooter();
+      // Set safe bottom padding for content
+      updateSafeBottomPadding();
       // Initial avatar dialogue
       (function(){
         if (!avatar || !bubble) return;
@@ -1190,8 +1201,12 @@
         positionAvatarAboveFooter();
         computeAvatarRestOffset();
         avatar && avatar.style.setProperty('--avatar-offset', 'var(--avatar-rest-offset)');
+        updateSafeBottomPadding();
       }, { passive: true });
-      window.addEventListener('orientationchange', positionAvatarAboveFooter);
+      window.addEventListener('orientationchange', function(){
+        positionAvatarAboveFooter();
+        updateSafeBottomPadding();
+      });
       window.addEventListener('resize', positionBubbleWithinViewport);
       window.addEventListener('orientationchange', positionBubbleWithinViewport);
     });
