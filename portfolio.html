@@ -559,24 +559,31 @@
           const isMobile = window.matchMedia('(max-width: 640px)').matches;
           vantaEffect = VANTA.NET({
             el: siteNet,
-            mouseControls: true,
-            touchControls: true,
+            // Reduce interactivity on mobile to avoid gesture conflicts
+            mouseControls: !isMobile,
+            touchControls: !isMobile,
             gyroControls: false,
+            // Ensure it fits the viewport
             minHeight: Math.max(200, window.innerHeight),
             minWidth: Math.max(200, window.innerWidth),
+            // Scale and density tuned for mobile
             scale: 1.0,
-            scaleMobile: isMobile ? 1.6 : 1.0,
+            scaleMobile: isMobile ? 0.85 : 1.0,
             backgroundAlpha: 0.0,
             color: 0x7a5cff,
-            points: isMobile ? 16.0 : 14.0,
-            maxDistance: isMobile ? 22.0 : 24.0,
-            spacing: isMobile ? 16.0 : 18.0,
+            points: isMobile ? 9.0 : 14.0,
+            maxDistance: isMobile ? 18.0 : 24.0,
+            spacing: isMobile ? 22.0 : 18.0,
           });
         } catch (e) { console.error('VANTA init error', e); }
       }
       initVanta();
       window.addEventListener('resize', function(){
         // Debounce resize re-init to avoid thrashing
+        clearTimeout(window.__vantaResizeTimer);
+        window.__vantaResizeTimer = setTimeout(initVanta, 250);
+      });
+      window.addEventListener('orientationchange', function(){
         clearTimeout(window.__vantaResizeTimer);
         window.__vantaResizeTimer = setTimeout(initVanta, 250);
       });
@@ -803,11 +810,20 @@
         ev.preventDefault();
         enableSound();
       });
+      // Mobile: also respond to touchstart for faster, reliable gesture
+      unmuteBtn && unmuteBtn.addEventListener('touchstart', function(ev){
+        ev.preventDefault();
+        enableSound();
+      }, { passive: false });
       // Make entire overlay clickable as well
       overlay && overlay.addEventListener('click', function(ev){
         ev.preventDefault();
         enableSound();
       });
+      overlay && overlay.addEventListener('touchstart', function(ev){
+        ev.preventDefault();
+        enableSound();
+      }, { passive: false });
       // Also attempt on first user interaction anywhere
       ['pointerdown','keydown'].forEach(evt => {
         window.addEventListener(evt, function handler(){
@@ -815,6 +831,18 @@
           window.removeEventListener(evt, handler);
         });
       });
+
+      // Ensure iframe has origin param for some mobile environments
+      try {
+        const iframe = document.getElementById('showreelFrame');
+        if (iframe && iframe.src) {
+          const url = new URL(iframe.src);
+          if (!url.searchParams.has('origin')) {
+            url.searchParams.set('origin', location.origin);
+            iframe.src = url.toString();
+          }
+        }
+      } catch(e) {}
     });
   </script>
   <script>
@@ -945,6 +973,22 @@
         const offsetPx = Math.round(targetX - centerX);
         avatar.style.setProperty('--avatar-rest-offset', `${offsetPx}px`);
       }
+
+      // Keep bubble within viewport on mobile by shifting horizontally when near edges
+      function positionBubbleWithinViewport(){
+        if (!avatar || !bubble) return;
+        // Measure avatar center and bubble width relative to viewport
+        const avatarRect = avatar.getBoundingClientRect();
+        const bubbleRect = bubble.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const safeMargin = 12; // px
+        const avatarCenterX = avatarRect.left + avatarRect.width / 2;
+        const halfBubble = bubbleRect.width / 2;
+        const overflowLeft = Math.max(0, safeMargin - (avatarCenterX - halfBubble));
+        const overflowRight = Math.max(0, (avatarCenterX + halfBubble) - (viewportWidth - safeMargin));
+        const shift = overflowLeft > 0 ? (overflowLeft) : (overflowRight > 0 ? (-overflowRight) : 0);
+        bubble.style.setProperty('--bubble-shift', `${shift}px`);
+      }
       if (!sections.length || !nextBtn) return;
 
       let current = 0;
@@ -1017,6 +1061,8 @@
               ? 'Welcome! Use the menu or buttons to explore.'
               : `This is my ${targetLabel}.`;
             bubble.classList.add('bubble-show');
+            // Adjust bubble position after it becomes visible
+            requestAnimationFrame(positionBubbleWithinViewport);
             clearTimeout(window.__bubbleTimer);
             window.__bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-show'), 4200);
           }
@@ -1054,6 +1100,7 @@
         if (!avatar || !bubble) return;
         bubble.textContent = 'Welcome! Use the menu or buttons to explore.';
         bubble.classList.add('bubble-show');
+        requestAnimationFrame(positionBubbleWithinViewport);
         clearTimeout(window.__bubbleTimer);
         window.__bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-show'), 4200);
       })();
@@ -1100,6 +1147,7 @@
                 ? 'Welcome! Use the menu or buttons to explore.'
                 : `This is my ${label}.`;
               bubble.classList.add('bubble-show');
+              requestAnimationFrame(positionBubbleWithinViewport);
               clearTimeout(window.__bubbleTimer);
               window.__bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-show'), 4200);
             }
@@ -1144,6 +1192,8 @@
         avatar && avatar.style.setProperty('--avatar-offset', 'var(--avatar-rest-offset)');
       }, { passive: true });
       window.addEventListener('orientationchange', positionAvatarAboveFooter);
+      window.addEventListener('resize', positionBubbleWithinViewport);
+      window.addEventListener('orientationchange', positionBubbleWithinViewport);
     });
   </script>
   </html>

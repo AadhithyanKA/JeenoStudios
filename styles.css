@@ -793,11 +793,30 @@ main > section { grid-area: 1 / 1; }
   place-items: center;
   background: transparent; /* fully transparent overlay per request */
   pointer-events: auto; /* capture taps/clicks on overlay */
+  touch-action: manipulation; /* improve tap responsiveness on mobile */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
   z-index: 2;
 }
 .projects.showreel .video-unmute {
   pointer-events: auto;
   border: none;
+}
+
+/* Mobile optimizations for showreel overlay/button */
+@media (max-width: 600px) {
+  .projects.showreel .project-card {
+    width: 96vw;
+    border-radius: 12px;
+  }
+  .projects.showreel .video-embed {
+    border-radius: 12px;
+  }
+  .projects.showreel .video-unmute {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    line-height: 1.2;
+  }
 }
 
 /* Shortfilm embed overlay in animations section */
@@ -972,7 +991,9 @@ main > section { grid-area: 1 / 1; }
   filter: drop-shadow(0 8px 18px rgba(0,0,0,0.35));
 }
 .speech-bubble {
+  --bubble-shift: 0px; /* JS sets this to keep bubble inside viewport */
   max-width: min(90vw, 520px);
+  box-sizing: border-box;
   padding: 10px 14px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.14);
@@ -982,8 +1003,11 @@ main > section { grid-area: 1 / 1; }
   color: var(--text);
   font-weight: 600;
   line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(8px) translateX(var(--bubble-shift));
   transition: opacity 260ms ease, transform 260ms ease;
 }
 .speech-bubble.bubble-show { opacity: 1; transform: translateY(0); }
@@ -999,6 +1023,13 @@ main > section { grid-area: 1 / 1; }
   border-left: 1px solid rgba(255,255,255,0.14);
   border-bottom: 1px solid rgba(255,255,255,0.14);
   transform: translateX(-50%) rotate(45deg);
+}
+
+@media (max-width: 600px) {
+  .speech-bubble {
+    max-width: calc(100vw - 24px); /* leave 12px margin on both sides */
+    font-size: 0.95rem;
+  }
 }
 
 @keyframes avatar-forward {
