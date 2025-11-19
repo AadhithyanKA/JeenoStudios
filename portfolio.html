@@ -8,7 +8,7 @@
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="is-loading">
     <main>
       <section class="portfolio-hero">
         <div class="container">
@@ -57,13 +57,11 @@
           <div class="project-grid" aria-label="Showreel">
             <article class="project-card">
               <div class="project-thumb">
-                <div class="video-overlay">
-                  <button class="btn primary video-unmute" type="button" aria-label="Unmute showreel">Tap to Unmute</button>
-                </div>
+                <div class="video-overlay"></div>
                 <div class="video-embed" role="region" aria-label="Aadhithyan Game Design Showreel">
                   <iframe
                     id="showreelFrame"
-                    src="https://www.youtube.com/embed/xY2J9jvz-vk?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=xY2J9jvz-vk&enablejsapi=1&controls=0&iv_load_policy=3&disablekb=1"
+                    src="https://www.youtube.com/embed/xY2J9jvz-vk?autoplay=0&mute=1&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=xY2J9jvz-vk&enablejsapi=1&controls=1&iv_load_policy=3&disablekb=1"
                     title="Aadhithyan Game Design Showreel"
                     allow="autoplay; encrypted-media; picture-in-picture"
                     allowfullscreen>
@@ -76,6 +74,7 @@
               </div>
             </article>
           </div>
+          <!-- YouTube controls will be shown inside the player; no extra button below -->
         </div>
       </section>
 
@@ -538,11 +537,97 @@
     <button class="btn primary section-next-btn" type="button" aria-label="Next section">Next ▶</button>
   </div>
   <footer class="site-footer" aria-label="Site footer">&copy; Aadhithyan 2025</footer>
+  <!-- Loading overlay content -->
+  <div class="loading-overlay" aria-hidden="true">
+    <div class="loading-title">Loading…</div>
+    <div class="loading-rotator" id="loading-rotator"></div>
+    <div class="loading-bar"><div class="loading-progress"></div></div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <!-- Removed VANTA.BIRDS -->
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function(){
+      // Loading overlay behavior: rotate messages and animate progress
+      const overlay = document.querySelector('.loading-overlay');
+      const rotator = document.getElementById('loading-rotator');
+      const progressEl = overlay ? overlay.querySelector('.loading-progress') : null;
+      const messages = [
+        'summoning hamsters to power the server',
+        'bribing electrons to move faster',
+        'please wait while we do absolutely nothing',
+        'converting coffee to code'
+      ];
+      let msgIdx = 0;
+      let msgTimer = null;
+      let messagesShown = 0;
+      let progress = 0;
+      let progressTimer = null;
+      let loaded = false;
+      let finished = false;
+
+      function showMessage(text){
+        if (!rotator) return;
+        rotator.classList.remove('show');
+        setTimeout(() => {
+          rotator.textContent = `Loading… ${text}`;
+          rotator.classList.add('show');
+          messagesShown++;
+          // If page loaded and all messages have been shown, finish after a short delay
+          if (loaded && messagesShown >= messages.length && !finished) {
+            finished = true;
+            if (msgTimer) clearInterval(msgTimer);
+            setTimeout(() => finishLoading(), 500);
+          }
+        }, 150);
+      }
+      function startMessageRotation(){
+        if (!rotator) return;
+        showMessage(messages[msgIdx]);
+        msgTimer = setInterval(() => {
+          msgIdx = (msgIdx + 1) % messages.length;
+          showMessage(messages[msgIdx]);
+        }, 900);
+      }
+      function startProgress(){
+        if (!progressEl) return;
+        progress = 0;
+        document.body.style.setProperty('--loading-progress', '0%');
+        progressTimer = setInterval(() => {
+          // Ease towards ~85% while loading
+          const target = 85;
+          progress += Math.max(1, (target - progress) * 0.12);
+          if (progress > target) progress = target;
+          progressEl.style.width = `${progress}%`;
+        }, 180);
+      }
+
+      startMessageRotation();
+      startProgress();
+
+      function finishLoading(){
+        document.body.classList.remove('is-loading');
+        if (overlay) overlay.classList.add('fade-out');
+        if (msgTimer) clearInterval(msgTimer);
+        if (progressTimer) clearInterval(progressTimer);
+        // Signal that overlay finished; let other scripts trigger intro
+        try {
+          window.__overlayDone = true;
+          document.dispatchEvent(new CustomEvent('jeeno:intro'));
+        } catch(e) {}
+        setTimeout(() => { overlay && overlay.remove(); }, 460);
+      }
+
+      // On full load, complete the bar and either finish immediately or wait for messages
+      window.addEventListener('load', function(){
+        loaded = true;
+        if (progressEl) {
+          progressEl.style.transition = 'width 260ms ease';
+          progressEl.style.width = '100%';
+        }
+        // Finish quickly regardless of message cycle; brief pause for 100% to be seen
+        setTimeout(() => finishLoading(), 250);
+      });
       let vantaEffect = null;
       function initVanta(){
         try {
@@ -749,88 +834,7 @@
     // Showreel unmute/loop initialization
     document.addEventListener('DOMContentLoaded', function(){
       const overlay = document.querySelector('.projects.showreel .video-overlay');
-      const unmuteBtn = document.querySelector('.projects.showreel .video-unmute');
-      let pendingUnmute = false;
-
-      function hideOverlay(){ if (overlay) overlay.style.display = 'none'; }
-      function showOverlay(text){
-        if (overlay) {
-          overlay.style.display = 'grid';
-          if (unmuteBtn) {
-            unmuteBtn.textContent = text;
-            unmuteBtn.setAttribute('aria-label', text);
-          }
-        }
-      }
-
-      window.onYouTubeIframeAPIReady = function(){
-        window.showreelPlayer = new YT.Player('showreelFrame', {
-          events: {
-            onReady: function(ev){
-              try {
-                ev.target.playVideo();
-                if (pendingUnmute) {
-                  ev.target.unMute();
-                  ev.target.setVolume(100);
-                  hideOverlay();
-                }
-              } catch(e) {}
-            },
-            onStateChange: function(ev){
-              try {
-                if (ev.data === YT.PlayerState.PAUSED) {
-                  // Cover YouTube suggestions with our overlay
-                  showOverlay('Tap to Play');
-                } else if (ev.data === YT.PlayerState.PLAYING) {
-                  // Keep overlay only if still muted (awaiting user unmute)
-                  if (window.showreelPlayer && !window.showreelPlayer.isMuted()) {
-                    hideOverlay();
-                  }
-                }
-              } catch(e) {}
-            }
-          }
-        });
-      };
-
-      function enableSound(){
-        pendingUnmute = true;
-        if (window.showreelPlayer) {
-          try {
-            showreelPlayer.unMute();
-            showreelPlayer.setVolume(100);
-            showreelPlayer.playVideo();
-            hideOverlay();
-          } catch (e) {}
-        }
-      }
-
-      // Prefer an explicit tap for reliable audio enablement
-      unmuteBtn && unmuteBtn.addEventListener('click', function(ev){
-        ev.preventDefault();
-        enableSound();
-      });
-      // Mobile: also respond to touchstart for faster, reliable gesture
-      unmuteBtn && unmuteBtn.addEventListener('touchstart', function(ev){
-        ev.preventDefault();
-        enableSound();
-      }, { passive: false });
-      // Make entire overlay clickable as well
-      overlay && overlay.addEventListener('click', function(ev){
-        ev.preventDefault();
-        enableSound();
-      });
-      overlay && overlay.addEventListener('touchstart', function(ev){
-        ev.preventDefault();
-        enableSound();
-      }, { passive: false });
-      // Also attempt on first user interaction anywhere
-      ['pointerdown','keydown'].forEach(evt => {
-        window.addEventListener(evt, function handler(){
-          enableSound();
-          window.removeEventListener(evt, handler);
-        });
-      });
+      if (overlay) overlay.style.display = 'none';
 
       // Ensure iframe has origin param for some mobile environments
       try {
@@ -918,6 +922,45 @@
       const footer = document.querySelector('.site-footer');
       const AVATAR_LEAD_MS = 220; // avatar starts moving slightly before page transition
 
+      // Intro animation: avatar drifts in an "S"-like path, then speaks
+      function playIntroAnimation(){
+        if (!avatar) return;
+        if (bubble) bubble.classList.remove('bubble-show');
+        const duration = 3600; // ms
+        const start = performance.now();
+        const ampX = Math.min(120, window.innerWidth * 0.24); // horizontal amplitude
+        const ampY = Math.min(40, window.innerHeight * 0.08); // vertical drift
+        const baseY = -Math.min(window.innerHeight * 0.7, 520); // start from top off-screen
+        function easeInOut(t){ return t < 0.5 ? 2*t*t : -1 + (4 - 2*t) * t; }
+        function frame(now){
+          const t = Math.min(1, (now - start) / duration);
+          const e = easeInOut(t);
+          // S-like path using combined sin waves
+          const x = Math.sin(e * Math.PI * 2) * ampX * 0.5 + Math.sin(e * Math.PI) * ampX * 0.3;
+          // descend from top (baseY → 0) while gently drifting
+          const y = baseY * (1 - e) + Math.sin(e * Math.PI * 2) * ampY;
+          avatar.classList.add('avatar-no-transition');
+          avatar.style.setProperty('--avatar-offset', `${Math.round(x)}px`);
+          avatar.style.setProperty('--avatar-intro-y', `${Math.round(y)}px`);
+          if (t < 1) {
+            requestAnimationFrame(frame);
+          } else {
+            // Restore to resting offset and clear vertical drift
+            avatar.classList.remove('avatar-no-transition');
+            avatar.style.setProperty('--avatar-intro-y', '0px');
+            avatar.style.setProperty('--avatar-offset', 'var(--avatar-rest-offset)');
+            if (bubble) {
+              bubble.textContent = "Welcome to Aadhithyan's Portfolio!! Use these buttons to navigate the site";
+              bubble.classList.add('bubble-show');
+              requestAnimationFrame(positionBubbleWithinViewport);
+              clearTimeout(window.__bubbleTimer);
+              window.__bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-show'), 5200);
+            }
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+
       // Compute bottom safe padding so last content isn't hidden by fixed nav/footer
       function updateSafeBottomPadding(){
         const navH = navBar ? navBar.offsetHeight : 0;
@@ -974,10 +1017,18 @@
         // Choose side with more space
         let targetX;
         const avatarApproxWidth = Math.min(Math.max(window.innerWidth * 0.12, 96), 140);
-        if (rightSpace >= leftSpace) {
-          targetX = Math.min(window.innerWidth - safeMargin - avatarApproxWidth / 2, rect.right + safeMargin + avatarApproxWidth / 2);
+        const isMobile = window.innerWidth <= 640;
+        const preferRight = isMobile ? true : (rightSpace >= leftSpace);
+        if (preferRight) {
+          targetX = Math.min(
+            window.innerWidth - safeMargin - avatarApproxWidth / 2,
+            rect.right + safeMargin + avatarApproxWidth / 2
+          );
         } else {
-          targetX = Math.max(safeMargin + avatarApproxWidth / 2, rect.left - safeMargin - avatarApproxWidth / 2);
+          targetX = Math.max(
+            safeMargin + avatarApproxWidth / 2,
+            rect.left - safeMargin - avatarApproxWidth / 2
+          );
         }
         const offsetPx = Math.round(targetX - centerX);
         avatar.style.setProperty('--avatar-rest-offset', `${offsetPx}px`);
@@ -1091,8 +1142,20 @@
       }
 
       function updateNavButtons(){
-        if (current >= sections.length - 1) { nextBtn.style.display = 'none'; } else { nextBtn.style.display = ''; }
-        if (prevBtn) { if (current <= 0) { prevBtn.style.display = 'none'; } else { prevBtn.style.display = ''; } }
+        const atLast = current >= sections.length - 1;
+        const atFirst = current <= 0;
+        if (nextBtn) {
+          nextBtn.style.visibility = atLast ? 'hidden' : 'visible';
+          nextBtn.style.pointerEvents = atLast ? 'none' : '';
+          nextBtn.setAttribute('aria-hidden', atLast ? 'true' : 'false');
+          nextBtn.tabIndex = atLast ? -1 : 0;
+        }
+        if (prevBtn) {
+          prevBtn.style.visibility = atFirst ? 'hidden' : 'visible';
+          prevBtn.style.pointerEvents = atFirst ? 'none' : '';
+          prevBtn.setAttribute('aria-hidden', atFirst ? 'true' : 'false');
+          prevBtn.tabIndex = atFirst ? -1 : 0;
+        }
       }
 
       function nextSection(){ setActive(current + 1, false); }
@@ -1106,15 +1169,14 @@
       positionAvatarAboveFooter();
       // Set safe bottom padding for content
       updateSafeBottomPadding();
-      // Initial avatar dialogue
-      (function(){
-        if (!avatar || !bubble) return;
-        bubble.textContent = 'Welcome! Use the menu or buttons to explore.';
-        bubble.classList.add('bubble-show');
-        requestAnimationFrame(positionBubbleWithinViewport);
-        clearTimeout(window.__bubbleTimer);
-        window.__bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-show'), 4200);
-      })();
+      // Intro animation will start after loading overlay dismisses
+      document.addEventListener('jeeno:intro', function(){
+        try { playIntroAnimation(); } catch(e) {}
+      });
+      // Fallback: if overlay already finished before this script ran
+      if (window.__overlayDone) {
+        try { playIntroAnimation(); } catch(e) {}
+      }
 
       // Auto-fade nav after inactivity; restore on interaction
       let navFadeTimer = null;

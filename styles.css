@@ -803,15 +803,23 @@ main > section {
   display: grid;
   place-items: center;
   background: transparent; /* fully transparent overlay per request */
-  pointer-events: auto; /* capture taps/clicks on overlay */
+  pointer-events: none; /* do not block clicks; visual only */
   touch-action: manipulation; /* improve tap responsiveness on mobile */
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   z-index: 2;
 }
-.projects.showreel .video-unmute {
+.projects.showreel .video-overlay .video-unmute {
   pointer-events: auto;
   border: none;
+  background: transparent !important; /* keep button transparent over video */
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  color: #ffffff;
+  text-shadow: 0 0 6px rgba(0,0,0,0.6);
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
 }
 
 /* Mobile optimizations for showreel overlay/button */
@@ -823,11 +831,21 @@ main > section {
   .projects.showreel .video-embed {
     border-radius: 12px;
   }
-  .projects.showreel .video-unmute {
+  .projects.showreel .video-overlay .video-unmute {
     font-size: 1rem;
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.9rem;
     line-height: 1.2;
   }
+
+/* Below-video controls container */
+.projects.showreel .video-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.6rem;
+}
+.projects.showreel .video-controls .video-unmute {
+  /* use default .btn.primary styles */
+}
 }
 
 /* Shortfilm embed overlay in animations section */
@@ -983,7 +1001,8 @@ main > section {
   /* slide horizontally near the footer using CSS variable */
   --avatar-offset: 0vw;
   --avatar-rest-offset: 0px; /* default resting offset (computed in JS) */
-  transform: translateX(calc(-50% + var(--avatar-offset)));
+  /* allow intro animation to drift vertically */
+  transform: translateX(calc(-50% + var(--avatar-offset))) translateY(var(--avatar-intro-y, 0px));
   /* vertically anchor via CSS variable set from JS */
   --avatar-bottom: 3.2rem;
   bottom: var(--avatar-bottom);
@@ -1057,3 +1076,85 @@ main > section {
 }
 .avatar-guide.move-forward { animation: avatar-forward var(--section-anim-duration) var(--section-anim-ease); }
 .avatar-guide.move-back { animation: avatar-back var(--section-anim-duration) var(--section-anim-ease); }
+/* ===== Cyberpunk Loading Overlay ===== */
+body.is-loading {
+  overflow: hidden;
+}
+/* Hide main UI while loading to avoid flicker */
+body.is-loading main,
+body.is-loading .avatar-guide,
+body.is-loading .section-nav-bar,
+body.is-loading .site-footer {
+  visibility: hidden;
+}
+/* Fullscreen overlay using body pseudo-elements to avoid extra markup */
+body.is-loading::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: all;
+  /* Cyberpunk-ish background: dark with neon gradient and scanlines */
+  background:
+    radial-gradient(1200px 600px at 20% 10%, rgba(0, 247, 255, 0.12), transparent 60%),
+    radial-gradient(900px 450px at 80% 90%, rgba(255, 0, 225, 0.11), transparent 60%),
+    linear-gradient(180deg, rgba(12, 16, 24, 0.98), rgba(6, 8, 12, 0.98)),
+    repeating-linear-gradient(180deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.0) 2px, rgba(0,0,0,0.0) 4px);
+}
+/* Loading overlay content container */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  opacity: 1;
+  transition: opacity 420ms ease;
+}
+.loading-overlay.fade-out { opacity: 0; }
+.loading-title {
+  color: #00f7ff;
+  font-size: clamp(18px, 3.5vw, 28px);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 6px rgba(0, 247, 255, 0.8),
+    0 0 18px rgba(0, 247, 255, 0.5),
+    0 0 32px rgba(255, 0, 225, 0.3);
+  animation: neonFlicker 2.2s infinite;
+}
+@keyframes neonFlicker {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(0, 247, 255, 0.7)); }
+  38% { opacity: 0.92; }
+  42% { opacity: 0.75; }
+  45% { opacity: 0.98; }
+  70% { opacity: 0.88; }
+}
+.loading-rotator {
+  margin-top: 0.75rem;
+  color: #ff00e1;
+  font-size: clamp(14px, 2.4vw, 22px);
+  letter-spacing: 0.06em;
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+.loading-rotator.show { opacity: 1; }
+.loading-bar {
+  margin-top: 1.25rem;
+  width: min(480px, 76vw);
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 10px rgba(0, 247, 255, 0.2) inset;
+}
+.loading-progress {
+  width: var(--loading-progress, 0%);
+  height: 100%;
+  background: linear-gradient(90deg, #00f7ff, #ff00e1);
+  filter: drop-shadow(0 0 6px rgba(0, 247, 255, 0.6));
+  transition: width 260ms ease;
+}
