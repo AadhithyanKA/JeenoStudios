@@ -877,7 +877,7 @@ main > section {
 .game-modal {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 3000; /* above avatar/bubble overlay on mobile */
 }
 .game-modal-backdrop {
   position: absolute;
@@ -896,9 +896,11 @@ main > section {
   padding: 1rem 1.2rem 1.2rem;
   color: #e9e9ef;
   outline: none;
+  max-height: calc(90vh - 12px);
+  overflow-y: auto; /* ensure long descriptions remain visible */
 }
 .game-modal-title { margin: 0 2.2rem 0.6rem 0; font-size: 1.25rem; }
-.game-modal-desc { margin: 0; line-height: 1.5; opacity: 0.9; }
+.game-modal-desc { margin: 0; line-height: 1.5; opacity: 0.9; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
 .game-modal-close {
   position: absolute;
   top: 0.4rem;
@@ -908,6 +910,16 @@ main > section {
   color: #fff;
   font-size: 1.4rem;
   cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .game-modal-dialog {
+    width: calc(100vw - 20px);
+    margin: 6vh auto;
+    padding: 0.9rem 1rem;
+    max-height: calc(88vh - 10px);
+  }
+  .game-modal-title { font-size: 1.1rem; margin-right: 2rem; }
 }
 /* Section-by-section navigation */
 .section-hidden { display: none !important; }
