@@ -238,6 +238,21 @@
           </div>
           <div class="slider" id="games-slider" aria-label="Games slideshow">
             <div class="slider-track">
+            <!-- Jeeno: The Awesome Dog Adventure -->
+            <article class="project-card game-jeeno" tabindex="0" role="button" aria-label="Open details for Jeeno: The Awesome Dog Adventure" data-title="Jeeno: The Awesome Dog Adventure" data-desc="Jeeno is an adventure platformer game. Help Jeeno get out of his nightmare. Follow the instructions to finish the stages, as the quotes help you get out of the nightmare. Remember this game is really hard — it takes real patience to complete the game." data-quote="Jeeno was my first game.\ndeveloped for android.\nWhich was a commercial sucess with 10,000 downloads">
+              <div class="project-thumb">
+                <img src="assets/screen-2.webp" alt="Jeeno: The Awesome Dog Adventure screenshot" loading="lazy" onerror="this.src='assets/store_capsule_header.png'; this.onerror=null;" />
+                <div class="thumb-label">Jeeno</div>
+                <div class="thumb-overlay" aria-hidden="true"></div>
+              </div>
+              <div class="project-body">
+                <h3 class="project-title">Jeeno: The Awesome Dog Adventure</h3>
+                <p class="project-desc">Tap to read the game description.</p>
+                <div class="project-actions">
+                  <button class="btn primary open-game-details">Read Description</button>
+                </div>
+              </div>
+            </article>
             <article class="project-card">
               <div class="project-thumb project-thumb--gradient">
                 <div class="thumb-label">Game 1</div>
@@ -672,6 +687,84 @@
         clearTimeout(window.__vantaResizeTimer);
         window.__vantaResizeTimer = setTimeout(initVanta, 250);
       });
+    });
+  </script>
+  <script>
+    // Game details modal for Jeeno
+    document.addEventListener('DOMContentLoaded', function(){
+      const jeenoCard = document.querySelector('.game-jeeno');
+      if (!jeenoCard) return;
+      const avatar = document.querySelector('.avatar-guide');
+      const bubble = avatar ? avatar.querySelector('.speech-bubble') : null;
+
+      // Create lightweight modal elements once
+      let modal = document.getElementById('game-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'game-modal';
+        modal.className = 'game-modal hidden';
+        modal.innerHTML = `
+          <div class="game-modal-backdrop" data-close="true"></div>
+          <div class="game-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="game-modal-title">
+            <button class="game-modal-close" aria-label="Close">×</button>
+            <h3 id="game-modal-title" class="game-modal-title"></h3>
+            <p class="game-modal-desc"></p>
+          </div>`;
+        document.body.appendChild(modal);
+      }
+
+      const dialog = modal.querySelector('.game-modal-dialog');
+      const titleEl = modal.querySelector('.game-modal-title');
+      const descEl = modal.querySelector('.game-modal-desc');
+      const closeBtn = modal.querySelector('.game-modal-close');
+
+      function openModal(){
+        titleEl.textContent = jeenoCard.dataset.title || 'Jeeno: The Awesome Dog Adventure';
+        descEl.textContent = jeenoCard.dataset.desc || '';
+        modal.classList.remove('hidden');
+        dialog.focus();
+        // Update avatar quote when modal opens
+        if (bubble) {
+          const rawQuote = jeenoCard.dataset.quote || 'Jeeno was my first game.\\ndeveloped for android.\\nWhich was a commercial sucess with 10,000 downloads';
+          const text = rawQuote.replace(/\\n/g, '\n').trim();
+          const parts = text.split('\n').map(s => s.trim()).filter(Boolean);
+          const firstMsg = [parts[0], parts[1]].filter(Boolean).join('\n');
+          const nextMsg = parts.slice(2).join('\n');
+
+          // Shorter timings for quicker follow-up
+          const firstDuration = 3000; // ms the first bubble stays visible
+          const nextDelay = 3200;     // ms until the follow-up appears
+          const secondDuration = 4200; // ms for the follow-up bubble
+
+          const showBubble = (message, duration = secondDuration) => {
+            bubble.textContent = message;
+            bubble.classList.add('bubble-show');
+            clearTimeout(window.__bubbleTimer);
+            window.__bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-show'), duration);
+          };
+
+          if (firstMsg) showBubble(firstMsg, firstDuration);
+          clearTimeout(window.__nextBubbleTimer);
+          if (nextMsg) {
+            // Show the follow-up dialogue shortly after the first fades
+            window.__nextBubbleTimer = setTimeout(() => {
+              showBubble(nextMsg, secondDuration);
+            }, nextDelay);
+          }
+        }
+      }
+
+      function closeModal(){
+        modal.classList.add('hidden');
+        jeenoCard.focus();
+      }
+
+      // Click handlers
+      jeenoCard.addEventListener('click', openModal);
+      jeenoCard.querySelector('.open-game-details')?.addEventListener('click', function(e){ e.stopPropagation(); openModal(); });
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', function(e){ if (e.target && e.target.getAttribute('data-close')) closeModal(); });
+      document.addEventListener('keydown', function(e){ if (!modal.classList.contains('hidden') && e.key === 'Escape') closeModal(); });
     });
   </script>
   <script>

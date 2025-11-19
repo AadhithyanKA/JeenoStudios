@@ -871,6 +871,44 @@ main > section {
   padding: 0.85rem 1rem 0.35rem;
   text-align: center;
 }
+
+/* ---- Game details modal (Jeeno) ---- */
+.game-modal.hidden { display: none; }
+.game-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+.game-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(3px);
+}
+.game-modal-dialog {
+  position: relative;
+  width: min(720px, 92vw);
+  margin: 8vh auto;
+  background: rgba(20,20,28,0.9);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+  border-radius: 16px;
+  padding: 1rem 1.2rem 1.2rem;
+  color: #e9e9ef;
+  outline: none;
+}
+.game-modal-title { margin: 0 2.2rem 0.6rem 0; font-size: 1.25rem; }
+.game-modal-desc { margin: 0; line-height: 1.5; opacity: 0.9; }
+.game-modal-close {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.6rem;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
 /* Section-by-section navigation */
 .section-hidden { display: none !important; }
 .section-next-btn {
@@ -1028,6 +1066,7 @@ main > section {
   padding: 10px 14px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.14);
+  white-space: pre-line; /* preserve \n as line breaks */
   background: rgba(0,0,0,0.55);
   -webkit-backdrop-filter: saturate(140%) blur(6px);
   backdrop-filter: saturate(140%) blur(6px);
