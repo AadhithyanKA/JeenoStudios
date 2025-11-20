@@ -606,6 +606,9 @@ main > section {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  /* Center the first/last slide when snapped */
+  scroll-padding-left: calc((100% - 50%) / 2);
+  scroll-padding-right: calc((100% - 50%) / 2);
 }
 
 /* Modernize: hide scrollbar, smoother scroll, prevent rubber-banding */
@@ -632,12 +635,20 @@ main > section {
   .slider-track > .project-card {
     flex-basis: 60%;
   }
+  .slider-track {
+    scroll-padding-left: calc((100% - 60%) / 2);
+    scroll-padding-right: calc((100% - 60%) / 2);
+  }
 }
 
 /* Mobile: larger cards for comfortable touch */
 @media (max-width: 640px) {
   .slider-track > .project-card {
     flex-basis: 85%;
+  }
+  .slider-track {
+    scroll-padding-left: calc((100% - 85%) / 2);
+    scroll-padding-right: calc((100% - 85%) / 2);
   }
 }
 
