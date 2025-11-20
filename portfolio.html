@@ -8,6 +8,68 @@
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
   </head>
+  <style>
+    /* Animations gallery styles */
+    .animations .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-auto-rows: 160px;
+      grid-auto-flow: dense;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .project-card.animation-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #0b0f17;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+      transform: translateZ(0);
+      cursor: pointer;
+    }
+    .project-card.animation-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #0b0f17; /* letterbox background to avoid cropping */
+      will-change: transform;
+      transition: transform 200ms ease;
+      display: block;
+    }
+    .project-card.animation-card img.white-bg { background: #ffffff; }
+    /* No label overlay: full-view animation cards */
+    /* Remove gradient overlay for full-view */
+    .project-card.animation-card:hover img { transform: none; }
+
+    /* Fibonacci tile sizing (approximate via grid spans) */
+    .animation-card.size-1 { grid-column: span 1; grid-row: span 1; }
+    .animation-card.size-2 { grid-column: span 2; grid-row: span 2; }
+    .animation-card.size-3 { grid-column: span 3; grid-row: span 2; }
+    .animation-card.size-5 { grid-column: span 3; grid-row: span 3; }
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .animations .project-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); grid-auto-rows: 140px; gap: 10px; }
+      .animation-card.size-3 { grid-column: span 2; grid-row: span 2; }
+      .animation-card.size-5 { grid-column: span 2; grid-row: span 3; }
+      .animation-card.size-8 { grid-column: span 3; grid-row: span 3; }
+    }
+
+    /* Modal adjustments for animations */
+    .animation-modal-content img {
+      max-width: min(90vw, 1024px);
+      max-height: min(80vh, 768px);
+      display: block;
+      margin: 0 auto;
+    }
+    .modal-actions { text-align: center; margin-top: 10px; }
+    .animations-empty {
+      padding: 24px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      color: #cbd5e1;
+      text-align: center;
+    }
+  </style>
   <body class="is-loading">
     <main>
       <section class="portfolio-hero">
@@ -410,35 +472,8 @@
             <div class="rain" aria-hidden="true"></div>
             <div class="matrix-text" data-text="Animation Works">Animation Works</div>
           </div>
-          <div class="project-grid" aria-label="Animation works list">
-            <!-- Placeholder animation cards (match project styling) -->
-            <article class="project-card">
-              <div class="project-thumb project-thumb--gradient">
-                <div class="thumb-label">Animation 1</div>
-                <div class="thumb-overlay" aria-hidden="true"></div>
-              </div>
-              <div class="project-body">
-                <h3 class="project-title">Animation Placeholder 1</h3>
-                <p class="project-desc">New animation entry coming soon.</p>
-                <div class="project-actions">
-                  <button class="btn primary" aria-disabled="true">Coming Soon</button>
-                </div>
-              </div>
-            </article>
-
-            <article class="project-card">
-              <div class="project-thumb project-thumb--gradient">
-                <div class="thumb-label">Animation 2</div>
-                <div class="thumb-overlay" aria-hidden="true"></div>
-              </div>
-              <div class="project-body">
-                <h3 class="project-title">Animation Placeholder 2</h3>
-                <p class="project-desc">New animation entry coming soon.</p>
-                <div class="project-actions">
-                  <button class="btn primary" aria-disabled="true">Coming Soon</button>
-                </div>
-              </div>
-            </article>
+          <div class="project-grid animations-grid" aria-label="Animation works list">
+            <!-- Animations GIF cards will be populated dynamically -->
           </div>
 
         </div>
@@ -694,6 +729,164 @@
       window.addEventListener('orientationchange', function(){
         clearTimeout(window.__vantaResizeTimer);
         window.__vantaResizeTimer = setTimeout(initVanta, 250);
+      });
+    });
+  </script>
+  <script>
+    // Animations gallery: populate GIF cards and add modal viewing
+    document.addEventListener('DOMContentLoaded', function(){
+      const animationsSection = document.querySelector('.animations:not(.shortfilms)');
+      const grid = animationsSection && animationsSection.querySelector('.animations-grid');
+      if (!grid) return;
+
+      const files = [
+        { src: 'assets/Animations/Boy.gif' },
+        { src: 'assets/Animations/ChickenMain-Chicky_Idle.gif' },
+        { src: 'assets/Animations/ChickenMain-Chicky_Run.gif' },
+        { src: 'assets/Animations/WalkCycle.gif' },
+        { src: 'assets/Animations/WalkCycle (1).gif' },
+        { src: 'assets/Animations/a.gif' },
+        { src: 'assets/Animations/b.gif' },
+        { src: 'assets/Animations/c.gif' },
+        { src: 'assets/Animations/e.gif' },
+        { src: 'assets/Animations/g.gif' },
+        { src: 'assets/Animations/h.gif' },
+        { src: 'assets/Animations/i.gif' },
+        { src: 'assets/Animations/j.gif' },
+        { src: 'assets/Animations/k.gif' },
+        { src: 'assets/Animations/pi-iation.gif' },
+        { src: 'assets/Animations/pi-imnation.gif' },
+        { src: 'assets/Animations/piggy-animation.gif' },
+        { src: 'assets/Animations/piggy-animnation.gif' },
+        { src: 'assets/Animations/system-outline-14-article.gif' },
+      ];
+
+      function titleFromPath(path){
+        const base = path.split('/').pop().replace(/\.gif$/i,'');
+        return base
+          .replace(/[_-]+/g,' ')
+          .replace(/\s+/g,' ')
+          .replace(/\(\d+\)/g, ' $1')
+          .trim();
+      }
+
+      grid.innerHTML = '';
+      files.forEach(({src}) => {
+        const title = titleFromPath(src);
+        const card = document.createElement('article');
+        card.className = 'project-card animation-item';
+        card.tabIndex = 0;
+        card.setAttribute('role','button');
+        card.setAttribute('aria-label', `Open animation ${title}`);
+        card.dataset.title = title;
+        card.dataset.img = src;
+
+        const thumb = document.createElement('div');
+        thumb.className = 'project-thumb';
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = `${title} animation`;
+        img.loading = 'lazy';
+        img.onerror = function(){ this.style.display = 'none'; };
+
+        const label = document.createElement('div');
+        label.className = 'thumb-label';
+        label.textContent = title;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'thumb-overlay';
+        overlay.setAttribute('aria-hidden','true');
+
+        thumb.appendChild(img);
+        thumb.appendChild(label);
+        thumb.appendChild(overlay);
+
+        const body = document.createElement('div');
+        body.className = 'project-body';
+
+        const h3 = document.createElement('h3');
+        h3.className = 'project-title';
+        h3.textContent = title;
+
+        const desc = document.createElement('p');
+        desc.className = 'project-desc';
+        desc.textContent = 'Tap to view the animation.';
+
+        const actions = document.createElement('div');
+        actions.className = 'project-actions';
+        const btn = document.createElement('button');
+        btn.className = 'btn primary open-animation';
+        btn.textContent = 'View';
+        actions.appendChild(btn);
+
+        body.appendChild(h3);
+        body.appendChild(desc);
+        body.appendChild(actions);
+
+        card.appendChild(thumb);
+        card.appendChild(body);
+        grid.appendChild(card);
+      });
+
+      // Lightweight modal for viewing animations, reuse game-modal styling
+      let modal = document.getElementById('anim-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'anim-modal';
+        modal.className = 'game-modal hidden';
+        modal.innerHTML = `
+          <div class="game-modal-backdrop" data-close="true"></div>
+          <div class="game-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="anim-modal-title">
+            <button class="game-modal-close" aria-label="Close">×</button>
+            <h3 id="anim-modal-title" class="game-modal-title"></h3>
+            <div class="game-modal-media">
+              <img id="anim-modal-img" alt="Animation preview" style="max-width:100%;height:auto;border-radius:12px;" />
+            </div>
+          </div>`;
+        document.body.appendChild(modal);
+      }
+
+      const dialog = modal.querySelector('.game-modal-dialog');
+      const titleEl = modal.querySelector('#anim-modal-title');
+      const imgEl = modal.querySelector('#anim-modal-img');
+      const closeBtn = modal.querySelector('.game-modal-close');
+
+      function openAnim(card){
+        const title = card?.dataset?.title || 'Animation';
+        const img = card?.dataset?.img || '';
+        titleEl.textContent = title;
+        imgEl.src = img;
+        imgEl.alt = `${title} animation`;
+        modal.classList.remove('hidden');
+        dialog.focus();
+      }
+
+      function closeAnim(){
+        modal.classList.add('hidden');
+        imgEl.src = '';
+      }
+
+      grid.addEventListener('click', (e) => {
+        const card = e.target.closest('.animation-item');
+        if (!card) return;
+        openAnim(card);
+      });
+
+      grid.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const card = e.target.closest('.animation-item');
+          if (card) openAnim(card);
+        }
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target.matches('.game-modal-close') || e.target.dataset.close === 'true') {
+          closeAnim();
+        }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeAnim();
       });
     });
   </script>
@@ -1382,5 +1575,82 @@
       window.addEventListener('resize', positionBubbleWithinViewport);
       window.addEventListener('orientationchange', positionBubbleWithinViewport);
     });
+  </script>
+  <script>
+    // Animations gallery: lazy-load GIFs; full-view cards; no modal
+    (function() {
+      const grid = document.querySelector('.animations .project-grid');
+      if (!grid) return;
+      const animationsDir = 'assets/Animations/';
+      const transparentGif = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+      const labelFromFile = (f) => f.replace(/\.[^/.]+$/, '')
+                                    .replace(/[-_]/g,' ')
+                                    .replace(/\b\w/g, c => c.toUpperCase());
+
+      const fibSizes = [1, 1, 2, 3, 5, 3, 2];
+      const WHITE_BG = new Set(['c.gif','pi-iation.gif','b.gif','j.gif']);
+      const getSize = (idx) => fibSizes[idx % fibSizes.length];
+
+      const makeCard = (file, idx) => {
+        const src = animationsDir + file;
+        const article = document.createElement('article');
+        const sizeClass = `size-${getSize(idx)}`;
+        article.className = `project-card animation-card ${sizeClass}`;
+        // Presentational card only; no interactivity
+
+        const img = document.createElement('img');
+        img.alt = labelFromFile(file);
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.dataset.src = src; // set real GIF only when visible
+        img.src = transparentGif; // super-light placeholder
+        if (WHITE_BG.has(file)) img.classList.add('white-bg');
+
+        article.appendChild(img);
+        return article;
+      };
+
+      // Lazy-load GIFs only when entering viewport to reduce cost
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target.querySelector('img');
+            if (img && img.dataset.src) {
+              img.src = img.dataset.src;
+              img.removeAttribute('data-src');
+            }
+            io.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '200px' });
+
+      const render = (files) => {
+        grid.innerHTML = '';
+        files.filter(f => /\.(gif)$/i.test(f)).forEach((f, idx) => {
+          const card = makeCard(f, idx);
+          grid.appendChild(card);
+          io.observe(card);
+        });
+      };
+
+      // Try to load manifest; fall back to window.ANIMATIONS if provided
+      const fallbackList = (window.ANIMATIONS && Array.isArray(window.ANIMATIONS)) ? window.ANIMATIONS : [];
+      fetch(animationsDir + 'animations.json')
+        .then((r) => { if (!r.ok) throw new Error('no manifest'); return r.json(); })
+        .then((json) => {
+          if (Array.isArray(json) && json.length) render(json);
+          else if (fallbackList.length) render(fallbackList);
+          else throw new Error('empty list');
+        })
+        .catch(() => {
+          if (fallbackList.length) render(fallbackList);
+          else {
+            const msg = document.createElement('div');
+            msg.className = 'animations-empty';
+            msg.textContent = 'Add animations.json under assets/Animations (array of GIF filenames), or define window.ANIMATIONS = ["file1.gif", ...] to populate.';
+            grid.replaceWith(msg);
+          }
+        });
+    })();
   </script>
   </html>
