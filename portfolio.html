@@ -255,7 +255,7 @@
                     </linearGradient>
                   </defs>
                   <text x="50%" y="44%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient1)" font-weight="800" font-size="56" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;">AR Experience</text>
-                  <text class="counter-text" x="50%" y="82%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient1)" font-weight="900" font-size="86" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;" data-target="10" data-suffix="+">0</text>
+                  <text class="counter-text" x="50%" y="82%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient1)" font-weight="900" font-size="86" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;" data-target="10" data-suffix="+" data-label=" Projects">0</text>
                 </svg>
                 <div class="thumb-overlay" aria-hidden="true"></div>
               </div>
@@ -276,7 +276,7 @@
                     </linearGradient>
                   </defs>
                   <text x="50%" y="44%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient2)" font-weight="800" font-size="56" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;">VR Experience</text>
-                  <text class="counter-text" x="50%" y="82%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient2)" font-weight="900" font-size="86" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;" data-target="2">0</text>
+                  <text class="counter-text" x="50%" y="82%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient2)" font-weight="900" font-size="86" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;" data-target="2" data-label=" Projects">0</text>
                 </svg>
                 <div class="thumb-overlay" aria-hidden="true"></div>
               </div>
@@ -561,6 +561,7 @@
       function animateCount(el){
         const target = Number(el.getAttribute('data-target') || '0');
         const suffix = el.getAttribute('data-suffix') || '';
+        const label = el.getAttribute('data-label') || '';
         const start = performance.now();
         const duration = 1200; // ms
         function step(now){
@@ -568,7 +569,7 @@
           const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
           const val = Math.floor(eased * target);
           el.textContent = val.toString();
-          if (t < 1) requestAnimationFrame(step); else el.textContent = target.toString() + suffix;
+          if (t < 1) requestAnimationFrame(step); else el.textContent = target.toString() + suffix + label;
         }
         requestAnimationFrame(step);
       }
