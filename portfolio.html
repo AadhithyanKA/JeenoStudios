@@ -54,6 +54,15 @@
       .animation-card.size-8 { grid-column: span 3; grid-row: span 3; }
     }
 
+    /* Shortfilm grid should not use dense/160px rows; let cards auto-size */
+    .animations .shortfilm-grid {
+      grid-template-columns: 1fr;
+      grid-auto-rows: auto;
+      grid-auto-flow: row;
+      align-items: stretch;
+      gap: 16px;
+    }
+  
     /* Modal adjustments for animations */
     .animation-modal-content img {
       max-width: min(90vw, 1024px);
@@ -1131,6 +1140,19 @@
             iframe.src = url.toString();
           }
         }
+        // Also ensure origin param exists for all Shortfilm iframes
+        const sfIframes = Array.from(document.querySelectorAll('.animations .shortfilm-embed iframe'));
+        sfIframes.forEach(ifr => {
+          try {
+            if (ifr.src) {
+              const u = new URL(ifr.src);
+              if (!u.searchParams.has('origin')) {
+                u.searchParams.set('origin', location.origin);
+                ifr.src = u.toString();
+              }
+            }
+          } catch(e) {}
+        });
       } catch(e) {}
     });
   </script>

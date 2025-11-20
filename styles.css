@@ -902,7 +902,7 @@ main > section {
   margin-top: 0.6rem;
 }
 }
-
+/* end showreel mobile */
 /* Shortfilm embed overlay in animations section */
 .animations .shortfilm-embed .video-overlay {
   position: absolute;
@@ -914,6 +914,7 @@ main > section {
 }
 .animations .shortfilm-embed .video-unmute { pointer-events: auto; border: none; }
 .animations .shortfilm-embed .project-thumb { height: auto; background: transparent; }
+.animations .shortfilm-embed .project-thumb { position: relative; }
 .animations .shortfilm-grid {
   place-items: center;
   grid-template-columns: 1fr; /* single centered card */
