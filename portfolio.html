@@ -254,16 +254,14 @@
                       <stop offset="100%" stop-color="#30d5ff" />
                     </linearGradient>
                   </defs>
-                  <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient1)" font-weight="800" font-size="54" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;">AR Experience</text>
+                  <text x="50%" y="44%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient1)" font-weight="800" font-size="56" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;">AR Experience</text>
+                  <text class="counter-text" x="50%" y="82%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient1)" font-weight="900" font-size="86" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;" data-target="10" data-suffix="+">0</text>
                 </svg>
                 <div class="thumb-overlay" aria-hidden="true"></div>
               </div>
               <div class="project-body">
                 <h3 class="project-title">AR Experience</h3>
-                <p class="project-desc">Interactive augmented reality project. Details coming soon.</p>
-                <div class="project-actions">
-                  <button class="btn primary" aria-disabled="true">Coming Soon</button>
-                </div>
+                <p class="project-desc">Worked with 10+ clients for AR projects showcasing their work in Augmented Reality.</p>
               </div>
             </article>
 
@@ -277,16 +275,14 @@
                       <stop offset="100%" stop-color="#30d5ff" />
                     </linearGradient>
                   </defs>
-                  <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient2)" font-weight="800" font-size="54" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;">VR Experience</text>
+                  <text x="50%" y="44%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient2)" font-weight="800" font-size="56" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;">VR Experience</text>
+                  <text class="counter-text" x="50%" y="82%" text-anchor="middle" dominant-baseline="middle" fill="url(#arvrGradient2)" font-weight="900" font-size="86" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" style="text-rendering: geometricPrecision;" data-target="2">0</text>
                 </svg>
                 <div class="thumb-overlay" aria-hidden="true"></div>
               </div>
               <div class="project-body">
                 <h3 class="project-title">VR Experience</h3>
-                <p class="project-desc">Immersive virtual reality project. Details coming soon.</p>
-                <div class="project-actions">
-                  <button class="btn primary" aria-disabled="true">Coming Soon</button>
-                </div>
+                <p class="project-desc">Worked with 2 clients for VR projects and teaching AR/VR at university level.</p>
               </div>
             </article>
           </div>
@@ -554,6 +550,41 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <!-- Removed VANTA.BIRDS -->
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+  <script>
+    // AR/VR counters: animate numbers from 0 to target when section is visible
+    document.addEventListener('DOMContentLoaded', function(){
+      const arvrSection = document.querySelector('.projects.arvr');
+      if (!arvrSection) return;
+      const counters = Array.from(arvrSection.querySelectorAll('.counter-text[data-target]'));
+      if (!counters.length) return;
+
+      function animateCount(el){
+        const target = Number(el.getAttribute('data-target') || '0');
+        const suffix = el.getAttribute('data-suffix') || '';
+        const start = performance.now();
+        const duration = 1200; // ms
+        function step(now){
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+          const val = Math.floor(eased * target);
+          el.textContent = val.toString();
+          if (t < 1) requestAnimationFrame(step); else el.textContent = target.toString() + suffix;
+        }
+        requestAnimationFrame(step);
+      }
+
+      let animated = false;
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !animated) {
+            animated = true;
+            counters.forEach(animateCount);
+          }
+        });
+      }, { threshold: 0.3 });
+      io.observe(arvrSection);
+    });
+  </script>
   <script>
     document.addEventListener('DOMContentLoaded', function(){
       // Loading overlay behavior: rotate messages and animate progress
