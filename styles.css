@@ -1006,7 +1006,16 @@ main > section {
   align-items: center;
   justify-content: center;
 }
-.section-nav-bar.nav-faded { opacity: 0.12; }
+/* When auto-faded, keep Home and Next fully visible; soften Previous only */
+.section-nav-bar.nav-faded .section-prev-btn { opacity: 0.18; }
+.section-nav-bar.nav-faded .section-home-btn,
+.section-nav-bar.nav-faded .section-next-btn { opacity: 1; }
+
+/* Hover highlight for buttons */
+.btn:hover,
+.btn:focus-visible { filter: brightness(1.06); box-shadow: 0 0 10px rgba(122, 92, 255, 0.35); transition: box-shadow 180ms ease, filter 180ms ease; }
+.section-nav-bar .btn:hover,
+.section-nav-bar .btn:focus-visible { transform: translateY(-1px); }
 .section-home-btn {
   /* uses .btn.primary gradient styles already defined */
 }
@@ -1040,8 +1049,20 @@ main > section {
   -webkit-background-clip: text;
   background-clip: text;
   text-shadow: 0 0 10px rgba(122,92,255,0.55), 0 0 18px rgba(48,213,255,0.45);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, color 160ms ease, background 160ms ease, border-color 160ms ease;
 }
-.section-index .btn:hover { opacity: 0.95; }
+.section-index .btn:hover,
+.section-index .btn:focus-visible {
+  color: #fff;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  background-image: linear-gradient(135deg, #ff4fd8, #7a5cff 50%, #30d5ff);
+  box-shadow: 0 0 14px rgba(122,92,255,0.55), 0 0 22px rgba(48,213,255,0.45);
+  border-color: rgba(255,255,255,0.28);
+  transform: translateY(-1px);
+}
+.section-index .btn:active { transform: translateY(0); box-shadow: 0 0 10px rgba(122,92,255,0.45), 0 0 16px rgba(48,213,255,0.35); }
 
 /* Fixed footer below the nav bar */
 .site-footer {
