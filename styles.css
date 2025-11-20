@@ -901,9 +901,6 @@ main > section {
   justify-content: center;
   margin-top: 0.6rem;
 }
-.projects.showreel .video-controls .video-unmute {
-  /* use default .btn.primary styles */
-}
 }
 
 /* Shortfilm embed overlay in animations section */
@@ -1028,9 +1025,6 @@ main > section {
 .btn:focus-visible { filter: brightness(1.06); box-shadow: 0 0 10px rgba(122, 92, 255, 0.35); transition: box-shadow 180ms ease, filter 180ms ease; }
 .section-nav-bar .btn:hover,
 .section-nav-bar .btn:focus-visible { transform: translateY(-1px); }
-.section-home-btn {
-  /* uses .btn.primary gradient styles already defined */
-}
 
 /* First-page section menu */
 .section-index {
